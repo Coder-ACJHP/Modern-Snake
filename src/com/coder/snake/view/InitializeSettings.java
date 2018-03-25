@@ -13,7 +13,7 @@ public class InitializeSettings {
 	public void injectDependencies() {
 		
 		InitializeSettings.controlPanel = new ControlPanel();
-		InitializeSettings.gamePanel = new GamePanel();
+		InitializeSettings.gamePanel = new GamePanel(controlPanel);
 		InitializeSettings.mainBoard = new MainBoard();
 		
 		final int controlPanelWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 4;
