@@ -19,24 +19,22 @@ import javax.swing.JColorChooser;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.coder.snake.model.Apple;
+import com.coder.snake.model.Direction;
+import com.coder.snake.model.Food;
 import com.coder.snake.model.Snake;
 
 public class GamePanel extends JPanel implements ActionListener {
 	
-	/*
-	 * https://forum.tutorials7.com/1527/how-to-create-snake-game-in-java-with-
-	 * intellij-idea-code
-	 */
+	
 	public static final int CELL_SIZE = 10;
-	public static final int SCALE = 32;
-	public static final int WIDTH = 20;
-	public static final int HEIGHT = 20;
-	public static final int SPEED = 4;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 70;
+    public static final int FPS = 32;
 
-	Apple apple = new Apple((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
-	Snake snake = new Snake(10, 10, 9, 10);
-	Timer timer = new Timer(1000 / SPEED, this);
+	private Food food;
+	private Snake snake;
+	private Timer timer;
+	private int score = 0;
 
 	private boolean mute = false;
 	private Color flexColor = Color.WHITE;
@@ -52,58 +50,53 @@ public class GamePanel extends JPanel implements ActionListener {
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
+	    
+	    snake = new Snake(100, 100, 100, 100);
+	    food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
+	    timer = new Timer(FPS, e-> {
+	    	initialize();
+	    });
+	}
+	
+	public void start() {
 		timer.start();
 	}
 	
-
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-
-		final Graphics2D graphics2d = (Graphics2D) g;
-		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		drawlines(graphics2d);
-
-		graphics2d.setColor(Color.BLACK);
-		for (int xx = 0; xx <= WIDTH * SCALE; xx += SCALE) {
-			graphics2d.drawLine(xx, 0, xx, HEIGHT * SCALE);
-		}
-
-		for (int yy = 0; yy <= HEIGHT * SCALE; yy += SCALE) {
-			graphics2d.drawLine(0, yy, WIDTH * SCALE, yy);
-		}
-
-		for (int d = 0; d < snake.length; d++) {
-			graphics2d.setColor(Color.GREEN);
-			graphics2d.fillRect(snake.snakeX[d] * SCALE + 1, snake.snakeY[d] * SCALE + 1, SCALE - 1, SCALE - 1);
-		}
-
-		graphics2d.setColor(Color.BLACK);
-		graphics2d.fillRect(apple.posX * SCALE + 1, apple.posY * SCALE + 1, SCALE - 1, SCALE - 1);
+	public void pause() {
+		timer.setDelay(2000);
 	}
-
-
-	public void startGame() {
-		
+	
+	public void gameOver() {
+		timer.stop();
+		snake.length = 2;
 	}
-
+	
+	public void increaseScore() {
+		score = score + 5;
+		currentControlPanel.scoreBoard.setText(String.valueOf(this.score));
+	}
+	
+	
 	public void muteGame() {
-		System.out.println("Game sound muted!");
+		currentControlPanel.soundButton.setIcon(new 
+				ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/mute-spiker.png")));
 		
 	}
-
 
 	public void unMuteGame() {
-		System.out.println("Game sound unmuted!");
+		currentControlPanel.soundButton.setIcon(new 
+				ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/spiker.png")));
 		
 	}
 	
-	public void changeBackground(Color color) {
-		setBackground(color);
+	public void changeBackground() {
+		flexColor = JColorChooser.showDialog(null, 
+				"Choose color to change snake background", Color.WHITE);
+		setBackground(flexColor);
 		repaint();
 	}
 
+	//This method drawing guide lines (cells)
 	public void drawlines(Graphics2D g) {
 
 		for (int x = 0; x <= getWidth(); x += CELL_SIZE) {
@@ -113,6 +106,46 @@ public class GamePanel extends JPanel implements ActionListener {
 				g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
 			}
 		}
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		final Graphics2D graphics2d = (Graphics2D) g;
+		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		//Draw guide lines
+//		drawlines(graphics2d);
+
+
+		for (int index = 0; index < snake.length; index++) {
+			graphics2d.setColor(Color.GREEN);
+			graphics2d.fillRect(snake.positionX[index] * CELL_SIZE + 1, snake.positionY[index] * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
+		}
+
+		graphics2d.setColor(Color.BLACK);
+		graphics2d.fillRect(food.positionX * CELL_SIZE + 1, food.positionY * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
+	}
+
+	
+	public void initialize() {
+		snake.move();
+		
+        if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
+            food.addFood();
+            snake.length++;
+            increaseScore();
+        }
+ 
+//		if(snake.length > 2) {
+//			for (int index = snake.length; index > 0; index--) {
+//				if ((snake.positionX[0] == snake.positionX[index]) & (snake.positionX[0] == snake.positionY[index]))
+//					gameOver();
+//				}
+//		}
+ 
+        repaint();
 	}
 
 	//When this panel lost focus focus on again. 
@@ -128,73 +161,89 @@ public class GamePanel extends JPanel implements ActionListener {
 		return focusAdapter;
 	}
 	
-	//Listen to arrow keys
+	/* Create movement methods and listen to keyboard keys
+	 * then we can control the game from control panel and
+	 * from arrow keys. 
+	 */
+	public void moveToUp() {
+		if (snake.direction != Direction.DOWN) {
+			snake.direction = Direction.UP;
+		}
+	}
+	
+	public void moveToDown() {
+		if (snake.direction != Direction.UP) {
+			snake.direction = Direction.DOWN;
+		}
+	}
+	
+	public void moveToRight() {
+		if (snake.direction != Direction.LEFT) {
+			snake.direction = Direction.RIGHT;
+		}
+	}
+	
+	public void moveToLeft() {
+		if (snake.direction != Direction.RIGHT) {
+			snake.direction = Direction.LEFT;
+		}
+	}
+	
 	private KeyListener customKeyAdapter() {
 		final KeyAdapter adapter = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				
 				int keyCode = e.getKeyCode();
-				if(keyCode == KeyEvent.VK_UP) {
-				
-					repaint();
-				} 
-				if(keyCode == KeyEvent.VK_DOWN) {
-					
-					repaint();
-				} 
-				if(keyCode == KeyEvent.VK_LEFT) {
-					
-					repaint();
+				if ((keyCode == KeyEvent.VK_LEFT) & snake.direction != Direction.RIGHT) {
+					snake.direction = Direction.LEFT;
 				}
-				if(keyCode == KeyEvent.VK_RIGHT) {
-					
-					repaint();	
+				if ((keyCode == KeyEvent.VK_RIGHT) & snake.direction != Direction.LEFT) {
+					snake.direction = Direction.RIGHT;
 				}
-				
-				if(keyCode == KeyEvent.VK_P) {
-					
+				if ((keyCode == KeyEvent.VK_UP) & snake.direction != Direction.DOWN) {
+					snake.direction = Direction.UP;
 				}
+	            if ((keyCode == KeyEvent.VK_DOWN) & snake.direction != Direction.UP) {
+	            	snake.direction = Direction.DOWN;
+	            }
 			}
 		};
 		return adapter;
 	}
 	
-	//Get action commands from control panel and trigger the action event.
+	
+	/*Get action commands from control panel and trigger the action event.*/
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case "sound":
-			if(mute) {
-				mute = false;
-				unMuteGame();
 
-				currentControlPanel.soundButton.setIcon(
-						new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/spiker.png")));
-			} else {
-				mute = true;
-				muteGame();
-				currentControlPanel.soundButton.setIcon(
-						new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/mute-spiker.png")));
+			switch (e.getActionCommand()) {
+			case "sound":
+				if(mute) { mute = false; unMuteGame(); } 
+				else { mute = true; muteGame(); }
+				break;
+			case "colors":
+				changeBackground();
+				break;
+			case "start":
+				start();
+				break;
+			case "right":
+				moveToRight();
+				break;
+			case "left":
+				moveToLeft();
+				break;
+			case "up":
+				moveToUp();
+				break;
+			case "down":
+				moveToDown();
+				break;
+			default:
+				repaint();
+				break;
 			}
-			break;
-		case "colors":
-			flexColor = JColorChooser.showDialog(null, "Choose color to change snake background", Color.WHITE);
-			changeBackground(flexColor);
-			break;
-		case "start":
-			break;
-		case "right":
-			break;
-		case "left":
-			break;
-		case "up":
-			break;
-		case "down":
-			break;
-		default:
-			break;
-		}
 		
 	}
 }

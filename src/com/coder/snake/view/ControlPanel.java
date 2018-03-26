@@ -30,7 +30,7 @@ public class ControlPanel extends JPanel {
 	final Color topColor = Color.decode("#000000");
 	final Color bottomColor = Color.decode("#53346d");
 	private JSeparator whiteSeparator_1, whiteSeparator_2, whiteSeparator_3;
-	private JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard;
+	public JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard;
 	public JButton startButton, colorChooserButton, upButton, downButton, leftButton, rightButton, soundButton;
 	private static final long serialVersionUID = 1L;
 	
@@ -134,7 +134,7 @@ public class ControlPanel extends JPanel {
 		whiteSeparator_2.setBounds(10, 488, 275, 12);
 		contentpanel.add(whiteSeparator_2);
 		
-		scoreBoard = new JLabel("23");
+		scoreBoard = new JLabel("0");
 		scoreBoard.setVerticalAlignment(SwingConstants.BOTTOM);
 		scoreBoard.setOpaque(true);
 		scoreBoard.setHorizontalTextPosition(SwingConstants.CENTER);

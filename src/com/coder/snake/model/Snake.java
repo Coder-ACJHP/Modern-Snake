@@ -4,54 +4,52 @@ import com.coder.snake.view.GamePanel;
 
 public class Snake {
 
-	GamePanel main;
+	public Enum<Direction> direction;
+	public int length = 5;
 
-	public int direction = 0;
-	public int length = 2;
-
-	public int snakeX[] = new int[main.WIDTH * main.HEIGHT];
-	public int snakeY[] = new int[main.WIDTH * main.HEIGHT];
+	public int positionX[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
+	public int positionY[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
 
 	public Snake(int x0, int y0, int x1, int y1) {
-		snakeX[0] = x0;
-		snakeY[0] = y0;
-		snakeX[1] = x1;
-		snakeY[1] = y1;
+		positionX[0] = x0;
+		positionY[0] = y0;
+		positionX[1] = x1;
+		positionY[1] = y1;
+		direction = Direction.RIGHT;
 	}
 
-	@SuppressWarnings("static-access")
 	public void move() {
 
-		for (int d = length; d > 0; d--) {
-			snakeX[d] = snakeX[d - 1];
-			snakeY[d] = snakeY[d - 1];
+		for (int index = length; index > 0; index--) {
+			positionX[index] = positionX[index - 1];
+			positionY[index] = positionY[index - 1];
 		}
 
-		if (direction == 0)
-			snakeX[0]++;
-		if (direction == 1)
-			snakeY[0]++;
-		if (direction == 2)
-			snakeX[0]--;
-		if (direction == 3)
-			snakeY[0]--;
+		if (direction == Direction.RIGHT)
+			positionX[0]++;
+		if (direction == Direction.DOWN)
+			positionY[0]++;
+		if (direction == Direction.LEFT)
+			positionX[0]--;
+		if (direction == Direction.UP)
+			positionY[0]--;
 
-		for (int d = length - 1; d > 0; d--) {
-			if ((snakeX[0] == snakeX[d]) & (snakeX[0] == snakeY[d]))
-				length = d - 2;
-		}
+//		for (int index = length - 1; index > 0; index--) {
+//			if ((positionX[0] == positionX[index]) & (positionX[0] == positionY[index]))
+//				length = index - 2;
+//		}
 
-		if (snakeX[0] > main.WIDTH)
-			snakeX[0] = 0;
-		if (snakeX[0] < 0)
-			snakeX[0] = main.WIDTH - 1;
-		if (snakeY[0] > main.HEIGHT - 1)
-			snakeY[0] = 0;
-		if (snakeY[0] < 0)
-			snakeY[0] = main.HEIGHT - 1;
+		if (positionX[0] > GamePanel.WIDTH)
+			positionX[0] = 0;
+		if (positionX[0] < 0)
+			positionX[0] = GamePanel.WIDTH - 1;
+		if (positionY[0] > GamePanel.HEIGHT - 1)
+			positionY[0] = 0;
+		if (positionY[0] < 0)
+			positionY[0] = GamePanel.HEIGHT - 1;
 
-		if (length < 2)
-			length = 2;
+		if (length < 5)
+			length = 5;
 	}
 	
 }
