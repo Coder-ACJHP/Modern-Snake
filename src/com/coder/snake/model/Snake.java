@@ -5,7 +5,8 @@ import com.coder.snake.view.GamePanel;
 public class Snake {
 
 	public Enum<Direction> direction;
-	public int length = 5;
+	public int length = 4;
+	public boolean gameIsOver = false;
 
 	public int positionX[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
 	public int positionY[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
@@ -34,10 +35,11 @@ public class Snake {
 		if (direction == Direction.UP)
 			positionY[0]--;
 
-//		for (int index = length - 1; index > 0; index--) {
-//			if ((positionX[0] == positionX[index]) & (positionX[0] == positionY[index]))
-//				length = index - 2;
-//		}
+		/* If the snake hits it self(body) finish the game */
+		for (int index = length - 1; index > 0; index--) {
+			if ((positionX[0] == positionX[index]) && (positionY[0] == positionY[index]))
+				gameIsOver = true;
+		}
 
 		if (positionX[0] > GamePanel.WIDTH)
 			positionX[0] = 0;
@@ -48,8 +50,8 @@ public class Snake {
 		if (positionY[0] < 0)
 			positionY[0] = GamePanel.HEIGHT - 1;
 
-		if (length < 5)
-			length = 5;
+		if (length < 4)
+			length = 4;
 	}
 	
 }

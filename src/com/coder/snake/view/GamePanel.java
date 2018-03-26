@@ -2,6 +2,7 @@ package com.coder.snake.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -27,7 +28,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	
 	public static final int CELL_SIZE = 10;
-    public static final int WIDTH = 100;
+    public static final int WIDTH = 95;
     public static final int HEIGHT = 70;
     public static final int FPS = 32;
 
@@ -35,8 +36,9 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Snake snake;
 	private Timer timer;
 	private int score = 0;
-
+	private String message;
 	private boolean mute = false;
+	private boolean gameIsPaused = false;
 	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
@@ -51,7 +53,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
 	    
-	    snake = new Snake(100, 100, 100, 100);
+	    snake = new Snake(30, 30, 29, 30);
 	    food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
 	    timer = new Timer(FPS, e-> {
 	    	initialize();
@@ -60,19 +62,30 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void start() {
 		timer.start();
+		snake.gameIsOver = false;
+		score = 0;
 	}
 	
 	public void pause() {
-		timer.setDelay(2000);
+		timer.restart();
+		gameIsPaused = true;
+		message = "Paused!";
 	}
 	
 	public void gameOver() {
 		timer.stop();
-		snake.length = 2;
+		message = "Game over!";
+		snake.length = 4;
 	}
 	
-	public void increaseScore() {
-		score = score + 5;
+	public void drawMessage(Graphics2D g) {
+		g.setColor(Color.BLACK);
+		final Font font = new Font("Lucida Grande", Font.BOLD, 60);
+		g.setFont(font);
+		g.drawString(this.message, 330, 350);
+	}
+	
+	public void drawScore() {
 		currentControlPanel.scoreBoard.setText(String.valueOf(this.score));
 	}
 	
@@ -126,6 +139,11 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		graphics2d.setColor(Color.BLACK);
 		graphics2d.fillRect(food.positionX * CELL_SIZE + 1, food.positionY * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
+		
+		
+		if(snake.gameIsOver || gameIsPaused) {
+			drawMessage(graphics2d);
+		}
 	}
 
 	
@@ -135,7 +153,8 @@ public class GamePanel extends JPanel implements ActionListener {
         if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
             food.addFood();
             snake.length++;
-            increaseScore();
+            score = score + 5;
+            drawScore();
         }
  
 //		if(snake.length > 2) {
@@ -145,6 +164,10 @@ public class GamePanel extends JPanel implements ActionListener {
 //				}
 //		}
  
+        if(snake.gameIsOver) {
+        	gameOver();
+        }
+        
         repaint();
 	}
 
