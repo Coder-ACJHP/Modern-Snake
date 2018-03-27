@@ -24,19 +24,21 @@ import javax.swing.Timer;
 import com.coder.snake.model.Direction;
 import com.coder.snake.model.Food;
 import com.coder.snake.model.Snake;
+import com.coder.snake.model.SoundPlayer;
 
 public class GamePanel extends JPanel implements ActionListener {
 	
 	
-	public static final int CELL_SIZE = 10;
-    public static final int WIDTH = 95;
-    public static final int HEIGHT = 70;
-    public static final int FPS = 32;
+	private static final int CELL_SIZE = 10;
+	public static final int WIDTH = 96;
+	public static final int HEIGHT = 70;
 
 	private Food food;
 	private Snake snake;
 	private Timer timer;
 	private int score = 0;
+	/* Game level (speed) */
+	public int DEFAULT_GAME_DIFFICULTY = 32;
 	private String statusMessage = "";
 	private boolean mute = false;
 	private Color flexColor = Color.WHITE;
@@ -49,14 +51,14 @@ public class GamePanel extends JPanel implements ActionListener {
 		
 		this.setFocusable(true);
 	    this.requestFocusInWindow(true);
-		this.setPreferredSize(new Dimension(900, 800));
+		this.setPreferredSize(new Dimension(910, 720));
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
 	    
 	    snake = new Snake(30, 30, 29, 30);
 	    food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
-	    timer = new Timer(FPS, e-> {
+	    timer = new Timer(DEFAULT_GAME_DIFFICULTY , e-> {
 	    	initialize();
 	    });
 	}
@@ -67,6 +69,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		snake.gameIsOver = false;
 		currentControlPanel.startButton.setEnabled(false);
 		currentControlPanel.pauseButton.setEnabled(true);
+		currentControlPanel.easyRdBtn.setEnabled(false);
+		currentControlPanel.mediumRdBtn.setEnabled(false);
+		currentControlPanel.hardRdBtn.setEnabled(false);
 		score = 0;
 		repaint();
 	}
@@ -93,7 +98,20 @@ public class GamePanel extends JPanel implements ActionListener {
 		snake.gameIsOver = true;
 		currentControlPanel.startButton.setEnabled(true);
 		currentControlPanel.pauseButton.setEnabled(false);
+		currentControlPanel.easyRdBtn.setEnabled(true);
+		currentControlPanel.mediumRdBtn.setEnabled(true);
+		currentControlPanel.hardRdBtn.setEnabled(true);
 		snake.length = 4;
+		repaint();
+	}
+	
+	/* Change game difficulty with changing delay of timer.
+	 * Then add the new difficulty value to variable to can
+	 * set the score based on difficulty.	  
+	 */
+	public void changeDifficulty(int difficulty) {
+		this.timer.setDelay(difficulty);
+		DEFAULT_GAME_DIFFICULTY = difficulty;
 		repaint();
 	}
 	
@@ -168,9 +186,27 @@ public class GamePanel extends JPanel implements ActionListener {
 		snake.move();
 		
         if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
-            food.addFood();
+        	if(!mute) {
+        		new SoundPlayer();
+        	}
+        	
+        	food.addFood();
             snake.length++;
-            score = score + 5;
+            
+            switch (DEFAULT_GAME_DIFFICULTY) {
+			case 64:
+				score = score + 3;
+				break;
+			case 32:
+				score = score + 5;
+				break;
+			case 16:
+				score = score + 10;
+				break;
+			default:
+				repaint();
+				break;
+			}
             drawScore();
         }
  
@@ -290,6 +326,15 @@ public class GamePanel extends JPanel implements ActionListener {
 			break;
 		case "down":
 			moveToDown();
+			break;
+		case "easyLevel":
+			changeDifficulty(64);
+			break;
+		case "mediumLevel":
+			changeDifficulty(32);
+			break;
+		case "hardLevel":
+			changeDifficulty(16);
 			break;
 		default:
 			repaint();

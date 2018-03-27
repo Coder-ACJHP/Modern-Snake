@@ -11,10 +11,12 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -28,13 +30,15 @@ public class ControlPanel extends JPanel {
 	protected JPanel contentpanel;
 	final Color topColor = Color.decode("#000000");
 	final Color bottomColor = Color.decode("#53346d");
-	private JSeparator whiteSeparator_1, whiteSeparator_2, whiteSeparator_3;
+	private JSeparator whiteSeparator_1, whiteSeparator_2;
+	public JRadioButton hardRdBtn, easyRdBtn, mediumRdBtn;
 	public JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard;
-	public JButton startButton, pauseButton, colorChooserButton, upButton, downButton, leftButton, rightButton,
-			soundButton;
+	public JButton startButton, pauseButton, colorChooserButton, upButton, downButton, leftButton, 
+	rightButton, soundButton;
 	private static final long serialVersionUID = 1L;
 	
 	public ControlPanel() {
+		setPreferredSize(new Dimension(300, 700));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, Color.GRAY, null, null, null));
 		setLayout(new BorderLayout(0, 0));
 	
@@ -47,20 +51,20 @@ public class ControlPanel extends JPanel {
 		titleLabel = new JLabel("Basic configurations : ");
 		titleLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 		titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		titleLabel.setBounds(10, 305, 276, 36);
+		titleLabel.setBounds(10, 287, 276, 36);
 		titleLabel.setForeground(Color.WHITE);
 		titleLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 22));
 		contentpanel.add(titleLabel);
 		
 		soundLabel = new JLabel("Sound : ");
-		soundLabel.setBounds(12, 367, 202, 24);
+		soundLabel.setBounds(12, 349, 202, 24);
 		soundLabel.setForeground(Color.WHITE);
 		soundLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
 		contentpanel.add(soundLabel);
 		
 		backgroundColorLabel = new JLabel("Background color : ");
 		backgroundColorLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
-		backgroundColorLabel.setBounds(12, 399, 202, 24);
+		backgroundColorLabel.setBounds(12, 381, 202, 24);
 		backgroundColorLabel.setForeground(Color.WHITE);
 		contentpanel.add(backgroundColorLabel);
 		
@@ -70,7 +74,7 @@ public class ControlPanel extends JPanel {
 		colorChooserButton.setBackground(new Color(255, 255, 255));
 		colorChooserButton.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		colorChooserButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/color-palette.png")));
-		colorChooserButton.setBounds(254, 395, 34, 29);
+		colorChooserButton.setBounds(252, 378, 34, 29);
 		colorChooserButton.setPreferredSize(new Dimension(50, 29));
 		contentpanel.add(colorChooserButton);
 		
@@ -121,7 +125,7 @@ public class ControlPanel extends JPanel {
 		whiteSeparator_1 = new JSeparator();
 		whiteSeparator_1.setBackground(new Color(245, 245, 245));
 		whiteSeparator_1.setPreferredSize(new Dimension(100, 0));
-		whiteSeparator_1.setBounds(10, 341, 276, 12);
+		whiteSeparator_1.setBounds(10, 323, 276, 12);
 		contentpanel.add(whiteSeparator_1);
 		
 		whiteSeparator_2 = new JSeparator();
@@ -147,12 +151,6 @@ public class ControlPanel extends JPanel {
 		scoreBoard.setBounds(65, 209, 159, 47);
 		contentpanel.add(scoreBoard);
 		
-		whiteSeparator_3 = new JSeparator();
-		whiteSeparator_3.setPreferredSize(new Dimension(100, 0));
-		whiteSeparator_3.setBackground(new Color(245, 245, 245));
-		whiteSeparator_3.setBounds(11, 624, 276, 12);
-		contentpanel.add(whiteSeparator_3);
-		
 		panelIcon = new JLabel("");
 		panelIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		panelIcon.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -167,23 +165,63 @@ public class ControlPanel extends JPanel {
 		soundButton.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
 		soundButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/spiker.png")));
 		soundButton.setPreferredSize(new Dimension(50, 29));
-		soundButton.setBounds(254, 364, 34, 29);
+		soundButton.setBounds(252, 346, 34, 29);
 		contentpanel.add(soundButton);
 		
 		startButton = new JButton("Start");
 		startButton.setActionCommand("start");
 		startButton.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-		startButton.setBounds(153, 637, 137, 47);
+		startButton.setBounds(149, 631, 137, 47);
 		contentpanel.add(startButton);
 
 		pauseButton = new JButton("Pause");
 		pauseButton.setActionCommand("pause");
 		pauseButton.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-		pauseButton.setBounds(10, 637, 137, 47);
+		pauseButton.setBounds(6, 631, 137, 47);
 		pauseButton.setEnabled(false);
 		contentpanel.add(pauseButton);
 
 		this.add(contentpanel);
+		
+		final JLabel levelLabel = new JLabel("Difficulty : ");
+		levelLabel.setForeground(Color.WHITE);
+		levelLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
+		levelLabel.setBounds(10, 415, 111, 24);
+		contentpanel.add(levelLabel);
+		
+		easyRdBtn = new JRadioButton("Easy");
+		easyRdBtn.setForeground(Color.WHITE);
+		easyRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
+		easyRdBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
+		easyRdBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		easyRdBtn.setActionCommand("easyLevel");
+		easyRdBtn.setBounds(105, 418, 58, 23);
+		contentpanel.add(easyRdBtn);
+		
+		mediumRdBtn = new JRadioButton("Mid");
+		mediumRdBtn.setForeground(Color.WHITE);
+		mediumRdBtn.setSelected(true);
+		mediumRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
+		mediumRdBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
+		mediumRdBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		mediumRdBtn.setActionCommand("mediumLevel");
+		mediumRdBtn.setBounds(166, 418, 58, 23);
+		contentpanel.add(mediumRdBtn);
+		
+		hardRdBtn = new JRadioButton("Hard");
+		hardRdBtn.setForeground(Color.WHITE);
+		hardRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
+		hardRdBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
+		hardRdBtn.setHorizontalAlignment(SwingConstants.CENTER);
+		hardRdBtn.setActionCommand("hardLevel");
+		hardRdBtn.setBounds(230, 418, 58, 23);
+		contentpanel.add(hardRdBtn);
+		
+		/* Make these radio buttons group */
+		final ButtonGroup group = new ButtonGroup();
+		group.add(easyRdBtn);
+		group.add(mediumRdBtn);
+		group.add(hardRdBtn);
 	
 	}
 
@@ -217,6 +255,9 @@ public class ControlPanel extends JPanel {
 		upButton.addActionListener(actionListener);
 		downButton.addActionListener(actionListener);
 		colorChooserButton.addActionListener(actionListener);
+		easyRdBtn.addActionListener(actionListener);
+		mediumRdBtn.addActionListener(actionListener);
+		hardRdBtn.addActionListener(actionListener);
 	}
 }
 

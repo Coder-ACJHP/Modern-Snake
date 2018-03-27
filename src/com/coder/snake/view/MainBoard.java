@@ -18,6 +18,8 @@ public class MainBoard extends JFrame {
 	/**
 	 * 
 	 */
+	private final static int SCREEN_WIDTH = 1280;
+	private final static int SCREEN_HEIGHT = 720;
 	private JPanel gamePanel;
 	private JPanel container;
 	private Dimension frameSize;
@@ -29,7 +31,7 @@ public class MainBoard extends JFrame {
 	
 	public void initialize() {
 		//add screen size to variable to can be used after.
-		frameSize = new Dimension(1200, 800);
+		frameSize = new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT);
 		
 		//Create the main frame for game.
 		this.setTitle("Modern Snake");
@@ -59,8 +61,8 @@ public class MainBoard extends JFrame {
 		container.add(controlPanel, BorderLayout.EAST);
 		
 		this.add(container, BorderLayout.CENTER);
-		this.setLocationRelativeTo(null);
 		this.pack();
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
 	}
