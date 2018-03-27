@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
 
 public class ControlPanel extends JPanel {
@@ -31,12 +30,14 @@ public class ControlPanel extends JPanel {
 	final Color bottomColor = Color.decode("#53346d");
 	private JSeparator whiteSeparator_1, whiteSeparator_2, whiteSeparator_3;
 	public JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard;
-	public JButton startButton, colorChooserButton, upButton, downButton, leftButton, rightButton, soundButton;
+	public JButton startButton, pauseButton, colorChooserButton, upButton, downButton, leftButton, rightButton,
+			soundButton;
 	private static final long serialVersionUID = 1L;
 	
 	public ControlPanel() {
+		setBorder(new SoftBevelBorder(BevelBorder.RAISED, Color.GRAY, null, null, null));
+		setLayout(new BorderLayout(0, 0));
 	
-	    
 		contentpanel = new JPanel();
 		contentpanel.setAutoscrolls(true);
 		contentpanel.setOpaque(false);
@@ -83,7 +84,7 @@ public class ControlPanel extends JPanel {
 		contentpanel.add(titleLabelTwo);
 		
 		final JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setBounds(0, 506, 300, 90);
+		buttonsPanel.setBounds(0, 506, 300, 103);
 		buttonsPanel.setOpaque(false);
 		buttonsPanel.setLayout(null);
 		contentpanel.add(buttonsPanel);
@@ -92,63 +93,64 @@ public class ControlPanel extends JPanel {
 		upButton.setActionCommand("up");
 		upButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/up.png")));
 		upButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		upButton.setBounds(97, 6, 105, 38);
+		upButton.setBounds(104, 10, 89, 38);
 		buttonsPanel.add(upButton);
 		
 		leftButton = new JButton("");
 		leftButton.setActionCommand("left");
 		leftButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/left.png")));
 		leftButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		leftButton.setBounds(2, 45, 97, 38);
+		leftButton.setBounds(12, 52, 89, 38);
 		buttonsPanel.add(leftButton);
 		
 		downButton = new JButton("");
 		downButton.setActionCommand("down");
 		downButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/down.png")));
 		downButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		downButton.setBounds(97, 45, 105, 38);
+		downButton.setBounds(104, 52, 89, 38);
 		buttonsPanel.add(downButton);
 		
 		rightButton = new JButton("");
 		rightButton.setActionCommand("right");
 		rightButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/right.png")));
 		rightButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		rightButton.setBounds(199, 45, 97, 38);
+		rightButton.setBounds(196, 52, 91, 38);
 		buttonsPanel.add(rightButton);
-		
-		startButton = new JButton("Start");
-		startButton.setActionCommand("start");
-		startButton.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-		startButton.setBounds(7, 637, 286, 47);
-		contentpanel.add(startButton);
+
 		
 		whiteSeparator_1 = new JSeparator();
 		whiteSeparator_1.setBackground(new Color(245, 245, 245));
-		whiteSeparator_1.setPreferredSize(new Dimension(100, 1));
+		whiteSeparator_1.setPreferredSize(new Dimension(100, 0));
 		whiteSeparator_1.setBounds(10, 341, 276, 12);
 		contentpanel.add(whiteSeparator_1);
 		
 		whiteSeparator_2 = new JSeparator();
-		whiteSeparator_2.setPreferredSize(new Dimension(100, 1));
+		whiteSeparator_2.setPreferredSize(new Dimension(100, 0));
 		whiteSeparator_2.setBackground(new Color(245, 245, 245));
 		whiteSeparator_2.setBounds(10, 488, 275, 12);
 		contentpanel.add(whiteSeparator_2);
 		
+		final JLabel lblYourScoreIs = new JLabel("Your score is");
+		lblYourScoreIs.setForeground(Color.WHITE);
+		lblYourScoreIs.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblYourScoreIs.setHorizontalAlignment(SwingConstants.CENTER);
+		lblYourScoreIs.setBounds(88, 184, 111, 24);
+		contentpanel.add(lblYourScoreIs);
+
 		scoreBoard = new JLabel("0");
-		scoreBoard.setVerticalAlignment(SwingConstants.BOTTOM);
-		scoreBoard.setOpaque(true);
-		scoreBoard.setHorizontalTextPosition(SwingConstants.CENTER);
+		scoreBoard.setForeground(Color.WHITE);
 		scoreBoard.setHorizontalAlignment(SwingConstants.CENTER);
-		scoreBoard.setFont(new Font("OCR A Std", Font.BOLD, 25));
+		scoreBoard.setVerticalAlignment(SwingConstants.CENTER);
+		scoreBoard.setFont(new Font("OCR A Extended", Font.BOLD, 30));
 		scoreBoard.setBackground(new Color(255, 255, 255));
-		scoreBoard.setBorder(new LineBorder(new Color(255, 255, 255)));
-		scoreBoard.setBounds(31, 200, 229, 47);
+		scoreBoard.setBorder(null);
+		scoreBoard.setBounds(65, 209, 159, 47);
 		contentpanel.add(scoreBoard);
 		
 		whiteSeparator_3 = new JSeparator();
-		whiteSeparator_3.setPreferredSize(new Dimension(100, 1));
+		whiteSeparator_3.setPreferredSize(new Dimension(100, 0));
 		whiteSeparator_3.setBackground(new Color(245, 245, 245));
-		whiteSeparator_3.setBounds(11, 613, 276, 12);
+		whiteSeparator_3.setBounds(11, 624, 276, 12);
 		contentpanel.add(whiteSeparator_3);
 		
 		panelIcon = new JLabel("");
@@ -168,8 +170,20 @@ public class ControlPanel extends JPanel {
 		soundButton.setBounds(254, 364, 34, 29);
 		contentpanel.add(soundButton);
 		
-		this.add(contentpanel, BorderLayout.CENTER);
+		startButton = new JButton("Start");
+		startButton.setActionCommand("start");
+		startButton.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		startButton.setBounds(153, 637, 137, 47);
+		contentpanel.add(startButton);
 
+		pauseButton = new JButton("Pause");
+		pauseButton.setActionCommand("pause");
+		pauseButton.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		pauseButton.setBounds(10, 637, 137, 47);
+		pauseButton.setEnabled(false);
+		contentpanel.add(pauseButton);
+
+		this.add(contentpanel);
 	
 	}
 
@@ -186,17 +200,18 @@ public class ControlPanel extends JPanel {
 		
 		graphics2d.fillRect(0, 0, getWidth(), getHeight());
 		
-		final Font TEXT_FONT = new Font("Helvetica", Font.BOLD, 40);
+		final Font TEXT_FONT = new Font("Helvetica", Font.BOLD, 35);
 		graphics2d.setColor(Color.WHITE);
 		graphics2d.setFont(TEXT_FONT);
 		
-		graphics2d.drawString("Modern Snake", getWidth() / 4, 165);
+		graphics2d.drawString("Modern Snake", 30, 165);
 		
 	}
 
 	public void addActionToButtons(ActionListener actionListener) {
-		soundButton.addActionListener(actionListener);
 		startButton.addActionListener(actionListener);
+		pauseButton.addActionListener(actionListener);
+		soundButton.addActionListener(actionListener);
 		rightButton.addActionListener(actionListener);
 		leftButton.addActionListener(actionListener);
 		upButton.addActionListener(actionListener);

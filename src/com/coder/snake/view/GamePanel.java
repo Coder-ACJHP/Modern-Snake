@@ -2,6 +2,7 @@ package com.coder.snake.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -36,9 +37,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Snake snake;
 	private Timer timer;
 	private int score = 0;
-	private String message;
+	private String statusMessage = "";
 	private boolean mute = false;
-	private boolean gameIsPaused = false;
 	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
@@ -49,6 +49,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		
 		this.setFocusable(true);
 	    this.requestFocusInWindow(true);
+		this.setPreferredSize(new Dimension(900, 800));
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
@@ -62,27 +63,45 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void start() {
 		timer.start();
+		statusMessage = "";
 		snake.gameIsOver = false;
+		currentControlPanel.startButton.setEnabled(false);
+		currentControlPanel.pauseButton.setEnabled(true);
 		score = 0;
+		repaint();
 	}
 	
 	public void pause() {
-		timer.restart();
-		gameIsPaused = true;
-		message = "Paused!";
+		timer.stop();
+		statusMessage = "Paused!";
+		currentControlPanel.pauseButton.setText("Resume");
+		currentControlPanel.pauseButton.setActionCommand("resume");
+		repaint();
 	}
 	
+	public void resume() {
+		timer.restart();
+		statusMessage = "";
+		currentControlPanel.pauseButton.setText("Pause");
+		currentControlPanel.pauseButton.setActionCommand("pause");
+		repaint();
+	}
+
 	public void gameOver() {
 		timer.stop();
-		message = "Game over!";
+		statusMessage = "Game over!";
+		snake.gameIsOver = true;
+		currentControlPanel.startButton.setEnabled(true);
+		currentControlPanel.pauseButton.setEnabled(false);
 		snake.length = 4;
+		repaint();
 	}
 	
 	public void drawMessage(Graphics2D g) {
 		g.setColor(Color.BLACK);
-		final Font font = new Font("Lucida Grande", Font.BOLD, 60);
+		final Font font = new Font("Lucida Grande", Font.BOLD, 80);
 		g.setFont(font);
-		g.drawString(this.message, 330, 350);
+		g.drawString(this.statusMessage, 300, 370);
 	}
 	
 	public void drawScore() {
@@ -140,10 +159,8 @@ public class GamePanel extends JPanel implements ActionListener {
 		graphics2d.setColor(Color.BLACK);
 		graphics2d.fillRect(food.positionX * CELL_SIZE + 1, food.positionY * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
 		
-		
-		if(snake.gameIsOver || gameIsPaused) {
-			drawMessage(graphics2d);
-		}
+		drawMessage(graphics2d);
+
 	}
 
 	
@@ -166,8 +183,8 @@ public class GamePanel extends JPanel implements ActionListener {
  
         if(snake.gameIsOver) {
         	gameOver();
-        }
-        
+		}
+
         repaint();
 	}
 
@@ -236,37 +253,48 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 	
 	
-	/*Get action commands from control panel and trigger the action event.*/
+	/* Get action commands from control panel and trigger the action event. */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-			switch (e.getActionCommand()) {
-			case "sound":
-				if(mute) { mute = false; unMuteGame(); } 
-				else { mute = true; muteGame(); }
-				break;
-			case "colors":
-				changeBackground();
-				break;
-			case "start":
-				start();
-				break;
-			case "right":
-				moveToRight();
-				break;
-			case "left":
-				moveToLeft();
-				break;
-			case "up":
-				moveToUp();
-				break;
-			case "down":
-				moveToDown();
-				break;
-			default:
-				repaint();
-				break;
+		switch (e.getActionCommand()) {
+		case "sound":
+			if (mute) {
+				mute = false;
+				unMuteGame();
+			} else {
+				mute = true;
+				muteGame();
 			}
-		
+			break;
+		case "colors":
+			changeBackground();
+			break;
+		case "start":
+			start();
+			break;
+		case "pause":
+			pause();
+			break;
+		case "resume":
+			resume();
+			break;
+		case "right":
+			moveToRight();
+			break;
+		case "left":
+			moveToLeft();
+			break;
+		case "up":
+			moveToUp();
+			break;
+		case "down":
+			moveToDown();
+			break;
+		default:
+			repaint();
+			break;
+		}
+
 	}
 }

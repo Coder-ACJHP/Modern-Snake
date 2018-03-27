@@ -29,14 +29,15 @@ public class MainBoard extends JFrame {
 	
 	public void initialize() {
 		//add screen size to variable to can be used after.
-		frameSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frameSize = new Dimension(1200, 800);
 		
 		//Create the main frame for game.
 		this.setTitle("Modern Snake");
-		this.setSize(frameSize);
+		this.setPreferredSize(frameSize);
+		this.setMaximumSize(frameSize);
+		this.setResizable(false);
 		this.setFont(new Font("Helvetica", Font.PLAIN, 18));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLocationRelativeTo(null);
 		
 		String version = System.getProperty("os.name").toLowerCase();
 		if (version.contains("windows") || version.contains("nux")) {
@@ -51,7 +52,6 @@ public class MainBoard extends JFrame {
 		
 		container = new JPanel();
 		container.setBackground(Color.DARK_GRAY);
-		container.setSize((int)frameSize.getWidth(), (int)frameSize.getHeight());
 		final BorderLayout containerLayout = new BorderLayout();
 		container.setLayout(containerLayout);
 		
@@ -59,6 +59,7 @@ public class MainBoard extends JFrame {
 		container.add(controlPanel, BorderLayout.EAST);
 		
 		this.add(container, BorderLayout.CENTER);
+		this.setLocationRelativeTo(null);
 		this.pack();
 		this.setVisible(true);
 		
