@@ -6,7 +6,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.TexturePaint;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -15,6 +19,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -55,7 +60,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
-	    
+	    	    
+	    /* define X and Y coordinate of snake */
 	    snake = new Snake(30, 30, 29, 30);
 	    food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
 	    timer = new Timer(DEFAULT_GAME_DIFFICULTY , e-> {
@@ -162,26 +168,57 @@ public class GamePanel extends JPanel implements ActionListener {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		final Graphics2D graphics2d = (Graphics2D) g;
-		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		Graphics2D graphics2d = (Graphics2D) g;
+		applyQualityRenderingHints(graphics2d);
 
 		//Draw guide lines
 //		drawlines(graphics2d);
 
 
 		for (int index = 0; index < snake.length; index++) {
-			graphics2d.setColor(Color.GREEN);
-			graphics2d.fillRect(snake.positionX[index] * CELL_SIZE + 1, snake.positionY[index] * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
+			makeUpSnake(graphics2d);
+			graphics2d.fillRect(snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 		}
 
-		graphics2d.setColor(Color.BLACK);
-		graphics2d.fillRect(food.positionX * CELL_SIZE + 1, food.positionY * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
+		drawFood(food.positionX, food.positionY, CELL_SIZE, graphics2d);
 		
 		drawMessage(graphics2d);
 
 	}
 
+	public void makeUpSnake(Graphics2D g2D) {
+		
+		final BufferedImage bi = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB); 
+		final Rectangle r = new Rectangle(0,0,5,5);
+		final TexturePaint tp = new TexturePaint(bi,r); 
+		final Graphics2D big = bi.createGraphics(); 
+		// Render into the BufferedImage graphics to create the texture 
+		big.setColor(Color.GREEN.darker()); 
+		big.fillRect(0,0,5,5); 
+		big.setColor(Color.lightGray); 
+		big.fillOval(0,0,3,3);
+		 
+		// Add the texture paint to the graphics context. 
+		g2D.setPaint(tp); 
+	}
 	
+	public void drawFood(int foodPositionX, int foodPositionY, int cellSize, Graphics2D g2D) {
+
+			final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
+			g2D.drawImage(snail, foodPositionX * cellSize, foodPositionY * cellSize, null);
+	}
+	
+	 protected void applyQualityRenderingHints(Graphics2D g2d) {
+         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+         g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+         g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+     }
+	 
 	public void initialize() {
 		snake.move();
 		
@@ -209,13 +246,6 @@ public class GamePanel extends JPanel implements ActionListener {
 			}
             drawScore();
         }
- 
-//		if(snake.length > 2) {
-//			for (int index = snake.length; index > 0; index--) {
-//				if ((snake.positionX[0] == snake.positionX[index]) & (snake.positionX[0] == snake.positionY[index]))
-//					gameOver();
-//				}
-//		}
  
         if(snake.gameIsOver) {
         	gameOver();

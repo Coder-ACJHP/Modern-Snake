@@ -4,18 +4,30 @@ import com.coder.snake.view.GamePanel;
 
 public class Snake {
 
-	public Enum<Direction> direction;
 	public int length = 4;
+	public Enum<Direction> direction;
+	public static final int WIDTH = 96;
+	public static final int HEIGHT = 70;
 	public volatile boolean gameIsOver = false;
 
-	public int positionX[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
-	public int positionY[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
+	public int positionX[] = new int[WIDTH * HEIGHT];
+	public int positionY[] = new int[WIDTH * HEIGHT];
 
-	public Snake(int x0, int y0, int x1, int y1) {
-		positionX[0] = x0;
-		positionY[0] = y0;
-		positionX[1] = x1;
-		positionY[1] = y1;
+	public Snake(int point0X, int point0Y, int point1X, int point1Y) {
+		
+	    /* define X and Y coordinate of snake */
+		positionX[0] = point0X;
+		positionY[0] = point0Y;
+		positionX[1] = point1X;
+		positionY[1] = point1Y;
+		
+		if(point0X - point1X == 1) {
+			positionX[2] = point0X -2;
+			positionY[2] = point0Y;
+			positionX[3] = point0X -3;
+			positionY[3] = point0Y;
+		}
+
 		direction = Direction.RIGHT;
 	}
 

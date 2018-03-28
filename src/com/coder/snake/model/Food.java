@@ -17,4 +17,5 @@ public class Food {
 		positionX = (int) (Math.random() * GamePanel.WIDTH);
 		positionY = (int) (Math.random() * GamePanel.HEIGHT);
 	}
+	
 }
