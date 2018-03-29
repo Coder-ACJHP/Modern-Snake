@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -20,6 +21,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -35,16 +38,26 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	
 	private static final int CELL_SIZE = 10;
-	public static final int WIDTH = 96;
+	public static final int WIDTH = 97;
 	public static final int HEIGHT = 70;
+	private final static String HEAD_RIGHT = "src/com/coder/snake/icons/snake-head-right.png";
+	private final static String HEAD_LEFT = "src/com/coder/snake/icons/snake-head-left.png";
+	private final static String HEAD_UP = "src/com/coder/snake/icons/snake-head-up.png";
+	private final static String HEAD_DOWN = "src/com/coder/snake/icons/snake-head-down.png";
+	private final static String TAIL_RIGHT = "src/com/coder/snake/icons/snake-tail-right.png";
+	private final static String TAIL_LEFT = "src/com/coder/snake/icons/snake-tail-left.png";
+	private final static String TAIL_UP = "src/com/coder/snake/icons/snake-tail-up.png";
+	private final static String TAIL_DOWN = "src/com/coder/snake/icons/snake-tail-down.png";
 
 	private Food food;
 	private Snake snake;
 	private Timer timer;
 	private int score = 0;
+	private String headImagePath = HEAD_RIGHT;
+	private String tailImagePath = TAIL_RIGHT;
 	/* Game level (speed) */
 	public int DEFAULT_GAME_DIFFICULTY = 32;
-	private String statusMessage = "";
+	private String statusMessage = "Press start button!";
 	private boolean mute = false;
 	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
@@ -123,9 +136,10 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void drawMessage(Graphics2D g) {
 		g.setColor(Color.BLACK);
-		final Font font = new Font("Lucida Grande", Font.BOLD, 80);
+		final Font font = new Font("Lucida Grande", Font.BOLD, 70);
+		final FontMetrics fontMetrics = getFontMetrics(font);
 		g.setFont(font);
-		g.drawString(this.statusMessage, 300, 370);
+		g.drawString(this.statusMessage, (getWidth() - fontMetrics.stringWidth(statusMessage)) / 2, getHeight() / 2);
 	}
 	
 	public void drawScore() {
@@ -175,13 +189,16 @@ public class GamePanel extends JPanel implements ActionListener {
 //		drawlines(graphics2d);
 
 
-		for (int index = 0; index < snake.length; index++) {
+		for (int index = 1; index < snake.length-1; index++) {
 			makeUpSnake(graphics2d);
 			graphics2d.fillRect(snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 		}
-
-		drawFood(food.positionX, food.positionY, CELL_SIZE, graphics2d);
 		
+		for (int index = 0; index < 1; index++) { drawHead(index, graphics2d);}
+
+		for (int index = snake.length-1; index < snake.length; index++) { drawTail(index, graphics2d);}
+		
+		drawFood(food.positionX, food.positionY, graphics2d);
 		drawMessage(graphics2d);
 
 	}
@@ -202,10 +219,24 @@ public class GamePanel extends JPanel implements ActionListener {
 		g2D.setPaint(tp); 
 	}
 	
-	public void drawFood(int foodPositionX, int foodPositionY, int cellSize, Graphics2D g2D) {
+	public void drawHead(int index, Graphics2D g2D) {
 
-			final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
-			g2D.drawImage(snail, foodPositionX * cellSize, foodPositionY * cellSize, null);
+		final Image image = Toolkit.getDefaultToolkit().getImage(headImagePath);
+		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE,
+				CELL_SIZE, CELL_SIZE, null);
+	}
+
+	public void drawTail(int index, Graphics2D g2D) {
+
+		final Image image = Toolkit.getDefaultToolkit().getImage(tailImagePath);
+		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE,
+				CELL_SIZE, CELL_SIZE, null);
+	}
+
+	public void drawFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
+
+		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
+		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 15, 15, null);
 	}
 	
 	 protected void applyQualityRenderingHints(Graphics2D g2d) {
@@ -216,7 +247,6 @@ public class GamePanel extends JPanel implements ActionListener {
          g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
          g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
          g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
      }
 	 
 	public void initialize() {
@@ -274,45 +304,86 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void moveToUp() {
 		if (snake.direction != Direction.DOWN) {
 			snake.direction = Direction.UP;
+			headImagePath = HEAD_UP;
+			tailImagePath = TAIL_UP;
+			repaint();
 		}
 	}
 	
 	public void moveToDown() {
 		if (snake.direction != Direction.UP) {
 			snake.direction = Direction.DOWN;
+			headImagePath = HEAD_DOWN;
+			tailImagePath = TAIL_DOWN;
+			repaint();
 		}
 	}
 	
 	public void moveToRight() {
 		if (snake.direction != Direction.LEFT) {
 			snake.direction = Direction.RIGHT;
+			headImagePath = HEAD_RIGHT;
+			tailImagePath = TAIL_RIGHT;
+			repaint();
 		}
 	}
 	
 	public void moveToLeft() {
 		if (snake.direction != Direction.RIGHT) {
 			snake.direction = Direction.LEFT;
+			headImagePath = HEAD_LEFT;
+			tailImagePath = TAIL_LEFT;
+			repaint();
 		}
 	}
 	
 	private KeyListener customKeyAdapter() {
+				
+		/* 
+		 * For disabling multiple key press we must control 
+		 * how many keys pressed in one time if more than 
+		 * one just return else change direction
+		 */
+		final Set<Integer> pressed = new HashSet<>();
+		
 		final KeyAdapter adapter = new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
-				
-				int keyCode = e.getKeyCode();
-				if ((keyCode == KeyEvent.VK_LEFT) & snake.direction != Direction.RIGHT) {
-					snake.direction = Direction.LEFT;
+			public synchronized void keyPressed(KeyEvent e) {
+
+				pressed.add(e.getKeyCode());
+				if(pressed.size() > 1) {
+					return;
+				} else {
+					Integer keyCode = pressed.iterator().next();
+
+					if ((keyCode == KeyEvent.VK_LEFT) && snake.direction != Direction.RIGHT) {
+						snake.direction = Direction.LEFT;
+						headImagePath = HEAD_LEFT;
+						tailImagePath = TAIL_LEFT;
+						repaint();
+					} else if ((keyCode == KeyEvent.VK_RIGHT) && snake.direction != Direction.LEFT) {
+						snake.direction = Direction.RIGHT;
+						headImagePath = HEAD_RIGHT;
+						tailImagePath = TAIL_RIGHT;
+						repaint();
+					} else if ((keyCode == KeyEvent.VK_UP) && snake.direction != Direction.DOWN) {
+						snake.direction = Direction.UP;
+						headImagePath = HEAD_UP;
+						tailImagePath = TAIL_UP;
+						repaint();
+					} else if ((keyCode == KeyEvent.VK_DOWN) && snake.direction != Direction.UP) {
+						snake.direction = Direction.DOWN;
+						headImagePath = HEAD_DOWN;
+						tailImagePath = TAIL_DOWN;
+						repaint();
+					}
 				}
-				if ((keyCode == KeyEvent.VK_RIGHT) & snake.direction != Direction.LEFT) {
-					snake.direction = Direction.RIGHT;
-				}
-				if ((keyCode == KeyEvent.VK_UP) & snake.direction != Direction.DOWN) {
-					snake.direction = Direction.UP;
-				}
-	            if ((keyCode == KeyEvent.VK_DOWN) & snake.direction != Direction.UP) {
-	            	snake.direction = Direction.DOWN;
-	            }
+
+			}
+			
+			@Override
+			public synchronized void keyReleased(KeyEvent e) {
+				pressed.remove(e.getKeyCode());
 			}
 		};
 		return adapter;
