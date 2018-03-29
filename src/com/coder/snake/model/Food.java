@@ -14,6 +14,7 @@ public class Food {
 	}
 
 	public void addFood() {
+		/* Give some spaces like 5 px for border */
 		positionX = (int) (Math.random() * GamePanel.WIDTH);
 		positionY = (int) (Math.random() * GamePanel.HEIGHT);
 	}

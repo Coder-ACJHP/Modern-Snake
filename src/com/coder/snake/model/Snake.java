@@ -5,6 +5,8 @@ import com.coder.snake.view.GamePanel;
 public class Snake {
 
 	public int length = 4;
+	private int POSIX = 30;
+	private final static int POSIY = 30;
 	public Enum<Direction> direction;
 	public static final int WIDTH = 96;
 	public static final int HEIGHT = 70;
@@ -13,21 +15,21 @@ public class Snake {
 	public int positionX[] = new int[WIDTH * HEIGHT];
 	public int positionY[] = new int[WIDTH * HEIGHT];
 
-	public Snake(int point0X, int point0Y, int point1X, int point1Y) {
-		
-	    /* define X and Y coordinate of snake */
-		positionX[0] = point0X;
-		positionY[0] = point0Y;
-		positionX[1] = point1X;
-		positionY[1] = point1Y;
-		
-		if(point0X - point1X == 1) {
-			positionX[2] = point0X -2;
-			positionY[2] = point0Y;
-			positionX[3] = point0X -3;
-			positionY[3] = point0Y;
-		}
+	public Snake() {
+		initialize();
+	}
 
+	public void initialize() {
+		/* define X and Y coordinate of snake */
+		positionX[0] = POSIX;
+		positionY[0] = POSIY;
+		positionX[1] = POSIX - 1;
+		positionY[1] = POSIY;
+		positionX[2] = POSIX - 2;
+		positionY[2] = POSIY;
+		positionX[3] = POSIX - 3;
+		positionY[3] = POSIY;
+		length = 4;
 		direction = Direction.RIGHT;
 	}
 
@@ -48,22 +50,18 @@ public class Snake {
 				positionY[0]--;
 
 		/* If the snake hits itself (body) finish the game */
-			for (int index = length - 1; index > 0; index--) {
+		for (int index = length - 1; index > 0; index--) {
 			if ((positionX[0] == positionX[index]) && (positionY[0] == positionY[index]))
 				this.gameIsOver = true;
-			}
+		}
 
-			if (positionX[0] > GamePanel.WIDTH)
-				positionX[0] = 0;
-			if (positionX[0] < 0)
-				positionX[0] = GamePanel.WIDTH - 1;
-			if (positionY[0] > GamePanel.HEIGHT - 1)
-				positionY[0] = 0;
-			if (positionY[0] < 0)
-				positionY[0] = GamePanel.HEIGHT - 1;
+		if (positionX[0] >= GamePanel.WIDTH || positionX[0] <= 0 || positionY[0] >= GamePanel.HEIGHT
+				|| positionY[0] <= 0) {
+			this.gameIsOver = true;
+		}
 
-			if (length < 4)
-				length = 4;
+		if (length < 4)
+			length = 4;
 	}
 	
 }

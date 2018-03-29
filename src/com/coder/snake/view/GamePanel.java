@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -21,8 +22,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -38,8 +37,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	
 	private static final int CELL_SIZE = 10;
-	public static final int WIDTH = 97;
-	public static final int HEIGHT = 70;
+	public static final int WIDTH = 96;
+	public static final int HEIGHT = 69;
+	final Color topColor = Color.decode("#000000");
+	final Color bottomColor = Color.decode("#53346d");
+	private static final String MUTE_IMG = "/com/coder/snake/icons/mute-spiker.png";
+	private static final String UNMUTE_IMG = "/com/coder/snake/icons/spiker.png";
 	private final static String HEAD_RIGHT = "src/com/coder/snake/icons/snake-head-right.png";
 	private final static String HEAD_LEFT = "src/com/coder/snake/icons/snake-head-left.png";
 	private final static String HEAD_UP = "src/com/coder/snake/icons/snake-head-up.png";
@@ -53,15 +56,15 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Snake snake;
 	private Timer timer;
 	private int score = 0;
+	public int difficult = 32;
 	private String headImagePath = HEAD_RIGHT;
 	private String tailImagePath = TAIL_RIGHT;
 	/* Game level (speed) */
-	public int DEFAULT_GAME_DIFFICULTY = 32;
-	private String statusMessage = "Press start button!";
 	private boolean mute = false;
 	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
+	private String statusMessage = "Press start button!";
 
 	public GamePanel(ControlPanel controlPanel) {
 		
@@ -75,14 +78,55 @@ public class GamePanel extends JPanel implements ActionListener {
 	    controlPanel.addActionToButtons(this);
 	    	    
 	    /* define X and Y coordinate of snake */
-	    snake = new Snake(30, 30, 29, 30);
-	    food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
-	    timer = new Timer(DEFAULT_GAME_DIFFICULTY , e-> {
+		snake = new Snake();
+		food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
+		timer = new Timer(difficult, e -> {
 	    	initialize();
 	    });
 	}
 	
+	public void initialize() {
+		snake.move();
+
+		if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
+			if (!mute) {
+				new SoundPlayer();
+			}
+
+			food.addFood();
+			snake.length++;
+
+			switch (difficult) {
+			case 64:
+				score = score + 3;
+				break;
+			case 32:
+				score = score + 5;
+				break;
+			case 16:
+				score = score + 10;
+				break;
+			default:
+				repaint();
+				break;
+			}
+			drawScore();
+		}
+
+		if (snake.gameIsOver) {
+			gameOver();
+		}
+
+		repaint();
+	}
+
 	public void start() {
+		/* Make snake head turned to right because snake body is reseted */
+		headImagePath = HEAD_RIGHT;
+		food.addFood();
+		/* Initialize the game to start from the scratch */
+		snake.initialize();
+		score = 0;
 		timer.start();
 		statusMessage = "";
 		snake.gameIsOver = false;
@@ -91,7 +135,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.easyRdBtn.setEnabled(false);
 		currentControlPanel.mediumRdBtn.setEnabled(false);
 		currentControlPanel.hardRdBtn.setEnabled(false);
-		score = 0;
 		repaint();
 	}
 	
@@ -120,7 +163,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.easyRdBtn.setEnabled(true);
 		currentControlPanel.mediumRdBtn.setEnabled(true);
 		currentControlPanel.hardRdBtn.setEnabled(true);
-		snake.length = 4;
 		repaint();
 	}
 	
@@ -130,13 +172,13 @@ public class GamePanel extends JPanel implements ActionListener {
 	 */
 	public void changeDifficulty(int difficulty) {
 		this.timer.setDelay(difficulty);
-		DEFAULT_GAME_DIFFICULTY = difficulty;
+		difficult = difficulty;
 		repaint();
 	}
 	
 	public void drawMessage(Graphics2D g) {
 		g.setColor(Color.BLACK);
-		final Font font = new Font("Lucida Grande", Font.BOLD, 70);
+		final Font font = new Font("Lucida Grande", Font.BOLD, 50);
 		final FontMetrics fontMetrics = getFontMetrics(font);
 		g.setFont(font);
 		g.drawString(this.statusMessage, (getWidth() - fontMetrics.stringWidth(statusMessage)) / 2, getHeight() / 2);
@@ -146,27 +188,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.scoreBoard.setText(String.valueOf(this.score));
 	}
 	
-	
-	public void muteGame() {
-		currentControlPanel.soundButton.setIcon(new 
-				ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/mute-spiker.png")));
-		
-	}
-
-	public void unMuteGame() {
-		currentControlPanel.soundButton.setIcon(new 
-				ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/spiker.png")));
-		
-	}
-	
-	public void changeBackground() {
-		flexColor = JColorChooser.showDialog(null, 
-				"Choose color to change snake background", Color.WHITE);
-		setBackground(flexColor);
-		repaint();
-	}
-
-	//This method drawing guide lines (cells)
+	// This method drawing guide lines (cells)
 	public void drawlines(Graphics2D g) {
 
 		for (int x = 0; x <= getWidth(); x += CELL_SIZE) {
@@ -177,7 +199,74 @@ public class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 	}
+
+	public void makeUpSnake(Graphics2D g2D) {
+
+		final BufferedImage bi = new BufferedImage(5, 5, BufferedImage.TYPE_INT_ARGB);
+		final Rectangle r = new Rectangle(0, 0, 5, 5);
+		final TexturePaint tp = new TexturePaint(bi, r);
+		final Graphics2D big = bi.createGraphics();
+		// Render into the BufferedImage graphics to create the texture
+		big.setColor(Color.decode("#74B571"));
+		big.fillRect(0, 0, 5, 5);
+		big.setColor(Color.lightGray);
+		big.fillOval(0, 0, 3, 3);
+
+		// Add the texture paint to the graphics context.
+		g2D.setPaint(tp);
+	}
+
+	public void drawHead(int index, Graphics2D g2D) {
+
+		final Image image = Toolkit.getDefaultToolkit().getImage(headImagePath);
+		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
+				CELL_SIZE, null);
+	}
+
+	public void drawTail(int index, Graphics2D g2D) {
+
+		final Image image = Toolkit.getDefaultToolkit().getImage(tailImagePath);
+		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
+				CELL_SIZE, null);
+	}
+
+	public void drawFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
+
+		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
+		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 15, 15, null);
+	}
 	
+	public void muteGame() {
+		currentControlPanel.soundButton.setIcon(new 
+		ImageIcon(ControlPanel.class.getResource(MUTE_IMG)));
+		
+	}
+
+	public void unMuteGame() {
+		currentControlPanel.soundButton.setIcon(new 
+		ImageIcon(ControlPanel.class.getResource(UNMUTE_IMG)));
+		
+	}
+	
+	public void changeBackground() {
+		flexColor = JColorChooser.showDialog(null, 
+				"Choose color to change snake background", Color.WHITE);
+		setBackground(flexColor);
+		repaint();
+	}
+
+	
+	protected void applyQualityRenderingHints(Graphics2D g2d) {
+		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+	}
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -188,101 +277,52 @@ public class GamePanel extends JPanel implements ActionListener {
 		//Draw guide lines
 //		drawlines(graphics2d);
 
+		/* Draw the border (wall) */
+		graphics2d.setPaint(new GradientPaint(0, 0, bottomColor, 0, getHeight(), topColor));
+		graphics2d.setStroke(new BasicStroke(2.0f));
+		graphics2d.drawRect(0, 0, getWidth(), getHeight());
 
-		for (int index = 1; index < snake.length-1; index++) {
+		/* Draw snake parts */
+		for (int index = 0; index < snake.length; index++) {
+
 			makeUpSnake(graphics2d);
-			graphics2d.fillRect(snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-		}
-		
-		for (int index = 0; index < 1; index++) { drawHead(index, graphics2d);}
 
-		for (int index = snake.length-1; index < snake.length; index++) { drawTail(index, graphics2d);}
+			if (index == 0) {
+				/* head */
+				drawHead(index, graphics2d);
+			} else if (index == snake.length - 1) {
+				/* tail */
+
+				int previousPartX = snake.positionX[index - 1];
+				int previousPartY = snake.positionY[index - 1];
+				if (previousPartY < snake.positionY[index]) {
+					// Up
+					tailImagePath = TAIL_UP;
+				} else if (previousPartX > snake.positionX[index]) {
+					// Right
+					tailImagePath = TAIL_RIGHT;
+				} else if (previousPartY > snake.positionY[index]) {
+					// Down
+					tailImagePath = TAIL_DOWN;
+				} else if (previousPartX < snake.positionX[index]) {
+					// Left
+					tailImagePath = TAIL_LEFT;
+				}
+
+				drawTail(index, graphics2d);
+			} else {
+				/* body */
+				graphics2d.fillRect(snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
+						CELL_SIZE);
+			}
+		}
 		
 		drawFood(food.positionX, food.positionY, graphics2d);
 		drawMessage(graphics2d);
 
+		graphics2d.dispose();
 	}
 
-	public void makeUpSnake(Graphics2D g2D) {
-		
-		final BufferedImage bi = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB); 
-		final Rectangle r = new Rectangle(0,0,5,5);
-		final TexturePaint tp = new TexturePaint(bi,r); 
-		final Graphics2D big = bi.createGraphics(); 
-		// Render into the BufferedImage graphics to create the texture 
-		big.setColor(Color.GREEN.darker()); 
-		big.fillRect(0,0,5,5); 
-		big.setColor(Color.lightGray); 
-		big.fillOval(0,0,3,3);
-		 
-		// Add the texture paint to the graphics context. 
-		g2D.setPaint(tp); 
-	}
-	
-	public void drawHead(int index, Graphics2D g2D) {
-
-		final Image image = Toolkit.getDefaultToolkit().getImage(headImagePath);
-		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE,
-				CELL_SIZE, CELL_SIZE, null);
-	}
-
-	public void drawTail(int index, Graphics2D g2D) {
-
-		final Image image = Toolkit.getDefaultToolkit().getImage(tailImagePath);
-		g2D.drawImage(image, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE,
-				CELL_SIZE, CELL_SIZE, null);
-	}
-
-	public void drawFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
-
-		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
-		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 15, 15, null);
-	}
-	
-	 protected void applyQualityRenderingHints(Graphics2D g2d) {
-         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-         g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-         g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-     }
-	 
-	public void initialize() {
-		snake.move();
-		
-        if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
-        	if(!mute) {
-        		new SoundPlayer();
-        	}
-        	
-        	food.addFood();
-            snake.length++;
-            
-            switch (DEFAULT_GAME_DIFFICULTY) {
-			case 64:
-				score = score + 3;
-				break;
-			case 32:
-				score = score + 5;
-				break;
-			case 16:
-				score = score + 10;
-				break;
-			default:
-				repaint();
-				break;
-			}
-            drawScore();
-        }
- 
-        if(snake.gameIsOver) {
-        	gameOver();
-		}
-
-        repaint();
-	}
 
 	//When this panel lost focus focus on again. 
 	private FocusListener customGetFocus() {
@@ -302,89 +342,74 @@ public class GamePanel extends JPanel implements ActionListener {
 	 * from arrow keys. 
 	 */
 	public void moveToUp() {
-		if (snake.direction != Direction.DOWN) {
-			snake.direction = Direction.UP;
-			headImagePath = HEAD_UP;
-			tailImagePath = TAIL_UP;
-			repaint();
+		if (!snake.gameIsOver) {
+			if (snake.direction != Direction.DOWN) {
+				snake.direction = Direction.UP;
+				headImagePath = HEAD_UP;
+				repaint();
+			}
 		}
 	}
 	
 	public void moveToDown() {
-		if (snake.direction != Direction.UP) {
-			snake.direction = Direction.DOWN;
-			headImagePath = HEAD_DOWN;
-			tailImagePath = TAIL_DOWN;
-			repaint();
+		if (!snake.gameIsOver) {
+			if (snake.direction != Direction.UP) {
+				snake.direction = Direction.DOWN;
+				headImagePath = HEAD_DOWN;
+				repaint();
+			}
 		}
 	}
 	
 	public void moveToRight() {
-		if (snake.direction != Direction.LEFT) {
-			snake.direction = Direction.RIGHT;
-			headImagePath = HEAD_RIGHT;
-			tailImagePath = TAIL_RIGHT;
-			repaint();
+		if (!snake.gameIsOver) {
+			if (snake.direction != Direction.LEFT) {
+				snake.direction = Direction.RIGHT;
+				headImagePath = HEAD_RIGHT;
+				repaint();
+			}
 		}
 	}
 	
 	public void moveToLeft() {
-		if (snake.direction != Direction.RIGHT) {
-			snake.direction = Direction.LEFT;
-			headImagePath = HEAD_LEFT;
-			tailImagePath = TAIL_LEFT;
-			repaint();
+		if (!snake.gameIsOver) {
+			if (snake.direction != Direction.RIGHT) {
+				snake.direction = Direction.LEFT;
+				headImagePath = HEAD_LEFT;
+				repaint();
+			}
 		}
 	}
 	
 	private KeyListener customKeyAdapter() {
-				
-		/* 
-		 * For disabling multiple key press we must control 
-		 * how many keys pressed in one time if more than 
-		 * one just return else change direction
-		 */
-		final Set<Integer> pressed = new HashSet<>();
-		
+
 		final KeyAdapter adapter = new KeyAdapter() {
 			@Override
 			public synchronized void keyPressed(KeyEvent e) {
 
-				pressed.add(e.getKeyCode());
-				if(pressed.size() > 1) {
-					return;
-				} else {
-					Integer keyCode = pressed.iterator().next();
+				if (!snake.gameIsOver) {
+					Integer keyCode = e.getKeyCode();
 
 					if ((keyCode == KeyEvent.VK_LEFT) && snake.direction != Direction.RIGHT) {
 						snake.direction = Direction.LEFT;
 						headImagePath = HEAD_LEFT;
-						tailImagePath = TAIL_LEFT;
 						repaint();
 					} else if ((keyCode == KeyEvent.VK_RIGHT) && snake.direction != Direction.LEFT) {
 						snake.direction = Direction.RIGHT;
 						headImagePath = HEAD_RIGHT;
-						tailImagePath = TAIL_RIGHT;
 						repaint();
 					} else if ((keyCode == KeyEvent.VK_UP) && snake.direction != Direction.DOWN) {
 						snake.direction = Direction.UP;
 						headImagePath = HEAD_UP;
-						tailImagePath = TAIL_UP;
 						repaint();
 					} else if ((keyCode == KeyEvent.VK_DOWN) && snake.direction != Direction.UP) {
 						snake.direction = Direction.DOWN;
 						headImagePath = HEAD_DOWN;
-						tailImagePath = TAIL_DOWN;
 						repaint();
 					}
 				}
+			}
 
-			}
-			
-			@Override
-			public synchronized void keyReleased(KeyEvent e) {
-				pressed.remove(e.getKeyCode());
-			}
 		};
 		return adapter;
 	}

@@ -190,6 +190,7 @@ public class ControlPanel extends JPanel {
 		contentpanel.add(levelLabel);
 		
 		easyRdBtn = new JRadioButton("Easy");
+		easyRdBtn.setOpaque(false);
 		easyRdBtn.setForeground(Color.WHITE);
 		easyRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		easyRdBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -199,6 +200,7 @@ public class ControlPanel extends JPanel {
 		contentpanel.add(easyRdBtn);
 		
 		mediumRdBtn = new JRadioButton("Mid");
+		mediumRdBtn.setOpaque(false);
 		mediumRdBtn.setForeground(Color.WHITE);
 		mediumRdBtn.setSelected(true);
 		mediumRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
@@ -209,6 +211,7 @@ public class ControlPanel extends JPanel {
 		contentpanel.add(mediumRdBtn);
 		
 		hardRdBtn = new JRadioButton("Hard");
+		hardRdBtn.setOpaque(false);
 		hardRdBtn.setForeground(Color.WHITE);
 		hardRdBtn.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		hardRdBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
