@@ -6,17 +6,21 @@ public class Food {
 
 	public int positionX;
 	public int positionY;
+	public int eatenCounter;
 
 	public Food(int startX, int startY) {
 		positionX = startX;
 		positionY = startY;
-
+		eatenCounter = 0;
 	}
 
 	public void addFood() {
-		/* Give some spaces like 5 px for border */
 		positionX = (int) (Math.random() * GamePanel.WIDTH);
 		positionY = (int) (Math.random() * GamePanel.HEIGHT);
+		eatenCounter++;
 	}
 	
+	public void addMasterFood() {
+
+	}
 }

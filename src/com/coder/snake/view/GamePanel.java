@@ -110,6 +110,12 @@ public class GamePanel extends JPanel implements ActionListener {
 				repaint();
 				break;
 			}
+
+			if (food.eatenCounter == 5) {
+				food.addMasterFood();
+				score = score + 20;
+			}
+
 			drawScore();
 		}
 
@@ -384,6 +390,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private KeyListener customKeyAdapter() {
 
 		final KeyAdapter adapter = new KeyAdapter() {
+
 			@Override
 			public synchronized void keyPressed(KeyEvent e) {
 
@@ -406,8 +413,12 @@ public class GamePanel extends JPanel implements ActionListener {
 						snake.direction = Direction.DOWN;
 						headImagePath = HEAD_DOWN;
 						repaint();
+					} else {
+						repaint();
 					}
+
 				}
+
 			}
 
 		};
