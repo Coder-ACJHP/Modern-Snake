@@ -107,14 +107,14 @@ public class GamePanel extends JPanel implements ActionListener {
 			changeScore(difficult);
 
 			if (food.eatenCounter % 5 == 0) {
-				food.addMasterFood();
+				food.addBonusFood();
 			}
 
 		} else if((snake.positionX[0] == food.masterPositionX) & (snake.positionY[0] == food.masterPositionY)) {
 			if (!mute) {
 				mediaPlayer.foodEaten();
 			}
-			food.deleteMasterFood();
+			food.deleteBonusFood();
 			countDownText = "";
 			score = score + 20;
 			snake.length = snake.length + 4;
@@ -290,7 +290,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
 	}
 	
-	public void drawMasterFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
+	public void drawBonusFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
 		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/rat.png");
 		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 25, 25, null);
 	}
@@ -377,7 +377,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		
 		if(food.eatenCounter > 0 && food.eatenCounter % 5 == 0) {
 			countDownText = String.valueOf(food.interval);
-			drawMasterFood(food.masterPositionX, food.masterPositionY, graphics2d);
+			drawBonusFood(food.masterPositionX, food.masterPositionY, graphics2d);
 		}
 		
 		drawMessage(graphics2d);

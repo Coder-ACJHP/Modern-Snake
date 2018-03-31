@@ -35,7 +35,7 @@ public class Food {
 		
 	}
 
-	public void addMasterFood() {
+	public void addBonusFood() {
 		int randomX = (int) (Math.random() * GamePanel.WIDTH);
 		int randomY = (int) (Math.random() * GamePanel.HEIGHT);
 		for (int i = 0; i < snake.length; i++) {
@@ -48,8 +48,9 @@ public class Food {
 		countDown.count();
 	}
 
-	public void deleteMasterFood() {
+	public void deleteBonusFood() {
 		timer.cancel();
+		this.interval = 0;
 		masterPositionX = GamePanel.WIDTH * GamePanel.WIDTH;
 		masterPositionY = GamePanel.HEIGHT * GamePanel.HEIGHT;
 	}
@@ -81,7 +82,7 @@ public class Food {
 			if (interval > 0) {
 				return;
 			} else {
-				deleteMasterFood();
+				deleteBonusFood();
 				theTimer.cancel();
 			}
 		}
