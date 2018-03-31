@@ -38,6 +38,7 @@ import com.coder.snake.model.SoundPlayer;
 public class GamePanel extends JPanel implements ActionListener {
 	
 	
+	private String countDownText = "";
 	private static final int CELL_SIZE = 10;
 	public static final int WIDTH = 97;
 	public static final int HEIGHT = 69;
@@ -114,6 +115,7 @@ public class GamePanel extends JPanel implements ActionListener {
 				mediaPlayer.foodEaten();
 			}
 			food.deleteMasterFood();
+			countDownText = "";
 			score = score + 20;
 			snake.length = snake.length + 4;
 		}
@@ -231,6 +233,10 @@ public class GamePanel extends JPanel implements ActionListener {
 		final FontMetrics fontMetrics = getFontMetrics(font);
 		g.setFont(font);
 		g.drawString(this.statusMessage, (getWidth() - fontMetrics.stringWidth(statusMessage)) / 2, getHeight() / 2);
+
+		g.setColor(Color.decode("#000000"));
+		g.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		g.drawString(countDownText, 940, 680);
 	}
 	
 	public void drawScore() {
@@ -370,7 +376,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		drawFood(food.positionX, food.positionY, graphics2d);
 		
 		if(food.eatenCounter > 0 && food.eatenCounter % 5 == 0) {
-			
+			countDownText = String.valueOf(food.interval);
 			drawMasterFood(food.masterPositionX, food.masterPositionY, graphics2d);
 		}
 		

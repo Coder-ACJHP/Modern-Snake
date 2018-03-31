@@ -14,6 +14,7 @@ public class Food {
 	public int masterPositionY;
 	public int eatenCounter = 0;
 	private CountDown countDown;
+	public int interval;
 	private Timer timer;
 
 	public Food() {
@@ -57,10 +58,9 @@ public class Food {
 
 		private static final int DELAY = 1000;
 		private static final int PERIOD = 1000;
-		private int interval;
 
 		public CountDown(int theInterval) {
-			this.interval = theInterval;
+			interval = theInterval;
 		}
 
 		public void count() {
@@ -70,15 +70,15 @@ public class Food {
 				@Override
 				public void run() {
 
-					control(timer, interval);
 					--interval;
+					control(timer, interval);
 				}
 
 			}, DELAY, PERIOD);
 		}
 
 		private void control(Timer theTimer, int interval) {
-			if (interval >= 0) {
+			if (interval > 0) {
 				return;
 			} else {
 				deleteMasterFood();
