@@ -119,8 +119,13 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 
 		/* If user earn new high score show it live */
-		if(score > highScore) {
+		if (score > highScore)
 			highScore = score;
+
+
+		if (snake.gameIsOver) {
+			gameOver();
+			mediaPlayer.gameOver();
 		}
 
 		drawScore();

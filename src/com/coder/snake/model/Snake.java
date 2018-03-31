@@ -10,8 +10,8 @@ public class Snake {
 	public Enum<Direction> direction;
 	public volatile boolean gameIsOver = false;
 
-	public int positionX[] = new int[GamePanel.WIDTH];
-	public int positionY[] = new int[GamePanel.HEIGHT];
+	public int positionX[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
+	public int positionY[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
 
 	public Snake() {
 		initialize();
