@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -22,6 +21,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -37,7 +39,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	
 	private static final int CELL_SIZE = 10;
-	public static final int WIDTH = 96;
+	public static final int WIDTH = 97;
 	public static final int HEIGHT = 69;
 	final Color topColor = Color.decode("#000000");
 	final Color bottomColor = Color.decode("#53346d");
@@ -55,12 +57,14 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Food food;
 	private Snake snake;
 	private Timer timer;
-	private int score = 0;
+	private int score;
+	private int highScore = 0;
 	public int difficult = 32;
 	private String headImagePath = HEAD_RIGHT;
 	private String tailImagePath = TAIL_RIGHT;
 	/* Game level (speed) */
 	private boolean mute = false;
+	private SoundPlayer mediaPlayer;
 	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
@@ -72,14 +76,16 @@ public class GamePanel extends JPanel implements ActionListener {
 		
 		this.setFocusable(true);
 	    this.requestFocusInWindow(true);
-		this.setPreferredSize(new Dimension(910, 720));
+		this.setPreferredSize(new Dimension(900, 720));
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
 	    	    
+	    highScore = Integer.valueOf(currentControlPanel.highScoreBoard.getText());
 	    /* define X and Y coordinate of snake */
 		snake = new Snake();
-		food = new Food((int) (Math.random() * WIDTH), (int) (Math.random() * HEIGHT));
+		food = new Food();
+		mediaPlayer = new SoundPlayer();
 		timer = new Timer(difficult, e -> {
 	    	initialize();
 	    });
@@ -88,41 +94,36 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void initialize() {
 		snake.move();
 
+		
 		if ((snake.positionX[0] == food.positionX) & (snake.positionY[0] == food.positionY)) {
 			if (!mute) {
-				new SoundPlayer();
+				mediaPlayer.foodEaten();
 			}
 
 			food.addFood();
+			food.eatenCounter++;
 			snake.length++;
+			changeScore(difficult);
 
-			switch (difficult) {
-			case 64:
-				score = score + 3;
-				break;
-			case 32:
-				score = score + 5;
-				break;
-			case 16:
-				score = score + 10;
-				break;
-			default:
-				repaint();
-				break;
-			}
-
-			if (food.eatenCounter == 5) {
+			if (food.eatenCounter % 5 == 0) {
 				food.addMasterFood();
-				score = score + 20;
 			}
 
-			drawScore();
+		} else if((snake.positionX[0] == food.masterPositionX) & (snake.positionY[0] == food.masterPositionY)) {
+			if (!mute) {
+				mediaPlayer.foodEaten();
+			}
+			food.deleteMasterFood();
+			score = score + 20;
+			snake.length = snake.length + 4;
 		}
 
-		if (snake.gameIsOver) {
-			gameOver();
+		/* If user earn new high score show it live */
+		if(score > highScore) {
+			highScore = score;
 		}
 
+		drawScore();
 		repaint();
 	}
 
@@ -132,15 +133,12 @@ public class GamePanel extends JPanel implements ActionListener {
 		food.addFood();
 		/* Initialize the game to start from the scratch */
 		snake.initialize();
+		prepareButtonsForStart();
 		score = 0;
 		timer.start();
 		statusMessage = "";
 		snake.gameIsOver = false;
-		currentControlPanel.startButton.setEnabled(false);
-		currentControlPanel.pauseButton.setEnabled(true);
-		currentControlPanel.easyRdBtn.setEnabled(false);
-		currentControlPanel.mediumRdBtn.setEnabled(false);
-		currentControlPanel.hardRdBtn.setEnabled(false);
+		
 		repaint();
 	}
 	
@@ -164,12 +162,52 @@ public class GamePanel extends JPanel implements ActionListener {
 		timer.stop();
 		statusMessage = "Game over!";
 		snake.gameIsOver = true;
+		prepareButtonsForGameOver();
+		
+		if(score > highScore) {
+
+			try (FileWriter fileWriter = new FileWriter(new File("src/com/coder/snake/files/scoreBoard.txt"))){
+				fileWriter.write(String.valueOf(score));
+				fileWriter.flush();
+				
+			} catch (IOException ex) {
+				System.out.println(ex.getLocalizedMessage());
+			}
+		}
+		repaint();
+	}
+	
+	private void prepareButtonsForStart() {
+		currentControlPanel.startButton.setEnabled(false);
+		currentControlPanel.pauseButton.setEnabled(true);
+		currentControlPanel.easyRdBtn.setEnabled(false);
+		currentControlPanel.mediumRdBtn.setEnabled(false);
+		currentControlPanel.hardRdBtn.setEnabled(false);
+	}
+	
+	private void prepareButtonsForGameOver() {
 		currentControlPanel.startButton.setEnabled(true);
 		currentControlPanel.pauseButton.setEnabled(false);
 		currentControlPanel.easyRdBtn.setEnabled(true);
 		currentControlPanel.mediumRdBtn.setEnabled(true);
 		currentControlPanel.hardRdBtn.setEnabled(true);
-		repaint();
+	}
+
+	private void changeScore(int theDifficult) {
+		switch (theDifficult) {
+		case 64:
+			score = score + 3;
+			break;
+		case 32:
+			score = score + 5;
+			break;
+		case 16:
+			score = score + 10;
+			break;
+		default:
+			repaint();
+			break;
+		}
 	}
 	
 	/* Change game difficulty with changing delay of timer.
@@ -237,9 +275,13 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 
 	public void drawFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
-
 		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/snail.png");
-		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 15, 15, null);
+		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, CELL_SIZE, CELL_SIZE, null);
+	}
+	
+	public void drawMasterFood(int foodPositionX, int foodPositionY, Graphics2D g2D) {
+		final Image snail = Toolkit.getDefaultToolkit().getImage("src/com/coder/snake/icons/rat.png");
+		g2D.drawImage(snail, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 25, 25, null);
 	}
 	
 	public void muteGame() {
@@ -283,10 +325,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		//Draw guide lines
 //		drawlines(graphics2d);
 
-		/* Draw the border (wall) */
-		graphics2d.setPaint(new GradientPaint(0, 0, bottomColor, 0, getHeight(), topColor));
-		graphics2d.setStroke(new BasicStroke(2.0f));
-		graphics2d.drawRect(0, 0, getWidth(), getHeight());
 
 		/* Draw snake parts */
 		for (int index = 0; index < snake.length; index++) {
@@ -323,7 +361,14 @@ public class GamePanel extends JPanel implements ActionListener {
 			}
 		}
 		
+				
 		drawFood(food.positionX, food.positionY, graphics2d);
+		
+		if(food.eatenCounter > 0 && food.eatenCounter % 5 == 0) {
+			
+			drawMasterFood(food.masterPositionX, food.masterPositionY, graphics2d);
+		}
+		
 		drawMessage(graphics2d);
 
 		graphics2d.dispose();

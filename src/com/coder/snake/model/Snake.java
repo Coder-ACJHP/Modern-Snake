@@ -8,12 +8,10 @@ public class Snake {
 	private int POSIX = 30;
 	private final static int POSIY = 30;
 	public Enum<Direction> direction;
-	public static final int WIDTH = 96;
-	public static final int HEIGHT = 70;
 	public volatile boolean gameIsOver = false;
 
-	public int positionX[] = new int[WIDTH * HEIGHT];
-	public int positionY[] = new int[WIDTH * HEIGHT];
+	public int positionX[] = new int[GamePanel.WIDTH];
+	public int positionY[] = new int[GamePanel.HEIGHT];
 
 	public Snake() {
 		initialize();
@@ -55,8 +53,7 @@ public class Snake {
 				this.gameIsOver = true;
 		}
 
-		if (positionX[0] >= GamePanel.WIDTH || positionX[0] <= 0 || positionY[0] >= GamePanel.HEIGHT
-				|| positionY[0] <= 0) {
+		if (positionX[0] > GamePanel.WIDTH || positionX[0] < 0 || positionY[0] > GamePanel.HEIGHT || positionY[0] < 0) {
 			this.gameIsOver = true;
 		}
 

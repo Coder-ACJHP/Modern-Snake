@@ -10,6 +10,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -32,7 +36,7 @@ public class ControlPanel extends JPanel {
 	final Color bottomColor = Color.decode("#53346d");
 	private JSeparator whiteSeparator_1, whiteSeparator_2;
 	public JRadioButton hardRdBtn, easyRdBtn, mediumRdBtn;
-	public JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard;
+	public JLabel panelIcon, titleLabel, soundLabel, backgroundColorLabel, titleLabelTwo, scoreBoard, highScoreBoard;
 	public JButton startButton, pauseButton, colorChooserButton, upButton, downButton, leftButton, 
 	rightButton, soundButton;
 	private static final long serialVersionUID = 1L;
@@ -225,7 +229,32 @@ public class ControlPanel extends JPanel {
 		group.add(easyRdBtn);
 		group.add(mediumRdBtn);
 		group.add(hardRdBtn);
+		
+		final JLabel lblHighScore = new JLabel("High score : ");
+		lblHighScore.setHorizontalAlignment(SwingConstants.CENTER);
+		lblHighScore.setForeground(new Color(220, 20, 60));
+		lblHighScore.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblHighScore.setBounds(51, 257, 111, 24);
+		contentpanel.add(lblHighScore);
+		
+		highScoreBoard = new JLabel();
+		highScoreBoard.setText("0");
+		highScoreBoard.setVerticalAlignment(SwingConstants.CENTER);
+		highScoreBoard.setHorizontalAlignment(SwingConstants.LEFT);
+		highScoreBoard.setForeground(Color.WHITE);
+		highScoreBoard.setFont(new Font("Dialog", Font.BOLD, 20));
+		highScoreBoard.setBorder(null);
+		highScoreBoard.setBackground(Color.WHITE);
+		highScoreBoard.setBounds(167, 257, 77, 25);
+		contentpanel.add(highScoreBoard);
 	
+		try(Stream<String> stream = Files.lines(Paths.get("src/com/coder/snake/files/scoreBoard.txt"))){
+			stream.forEach(line-> {
+				highScoreBoard.setText(line);
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
