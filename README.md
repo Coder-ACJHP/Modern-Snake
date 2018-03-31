@@ -21,12 +21,11 @@
 <h2>How to play ? </h2>
 <p>Download the project from here then import it in any IDE (I used Eclipse) then start the /Snake/src/com/coder/snake/start/Snake_Modern.java class and enjoy</p>
 <p>You can also control the snake from your keyboard (arrow keys ⬅️ ➡️ ⬆️ ⬇️  )</p>
-
-<h4>You can easily export the game as single executable '.jar' with Maven</h4>
-<h4>How to export the game as single executable jar 'independed platform' ?</h4>
+<p>You can easily export the game as single executable '.jar' with Maven</p>
+<h2>How to export the game as single executable jar 'independed platform' ?</h2>
 <p>Just add this <code>maven-assembly-plugin</code> into your POM.XML file then run the following code in your IDE or Terminal : </p>
 <pre>mvn clean compile assembly:single</pre>
 <p>That's it 😍🎉 enjoy with your time 👍</p>
 
-<h2>For any question 🤔 please 📧 me at : <a href="mailto:hexa.octabin@gmail.com">hexa.octabin@gmail.com</a></h2>
+<p>For any question 🤔 please 📧 me at : <a href="mailto:hexa.octabin@gmail.com">hexa.octabin@gmail.com</a></p>
 <h3>I hope this help to juniors learn basics of building game via Java, thank you for reading 😊</h3>
