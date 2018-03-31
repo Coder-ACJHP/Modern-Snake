@@ -1,4 +1,4 @@
-package com.coder.snake.view;
+package com.coder.snake.controller;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

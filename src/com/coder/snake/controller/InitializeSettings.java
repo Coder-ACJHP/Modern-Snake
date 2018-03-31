@@ -1,4 +1,7 @@
-package com.coder.snake.view;
+package com.coder.snake.controller;
+
+import com.coder.snake.view.ControlPanel;
+import com.coder.snake.view.GamePanel;
 
 public class InitializeSettings {
 

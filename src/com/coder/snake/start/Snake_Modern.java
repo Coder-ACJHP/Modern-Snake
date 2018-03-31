@@ -4,7 +4,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.coder.snake.view.InitializeSettings;
+import com.coder.snake.controller.InitializeSettings;
 
 public class Snake_Modern {
 
