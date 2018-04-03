@@ -29,7 +29,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.coder.snake.icons.ImagePathes;
+import com.coder.snake.files.FilePaths;
+import com.coder.snake.icons.ImagePaths;
 import com.coder.snake.model.Direction;
 import com.coder.snake.model.Food;
 import com.coder.snake.model.Snake;
@@ -50,11 +51,11 @@ public class GamePanel extends JPanel implements ActionListener {
 	private int score;
 	private int highScore = 0;
 	public int difficult = 42;
-	private String snailImagePath = ImagePathes.SNAIL;
-	private String ratImagePath = ImagePathes.RAT;
-	private String headImagePath = ImagePathes.HEAD_RIGHT;
-	private String bodyImagePath = ImagePathes.BODY_RIGHT;
-	private String tailImagePath = ImagePathes.TAIL_RIGHT;
+	private String snailImagePath = ImagePaths.SNAIL;
+	private String ratImagePath = ImagePaths.RAT;
+	private String headImagePath = ImagePaths.HEAD_RIGHT;
+	private String bodyImagePath = ImagePaths.BODY_RIGHT;
+	private String tailImagePath = ImagePaths.TAIL_RIGHT;
 	/* Game level (speed) */
 	private boolean mute = false;
 	private boolean guideLine = false;
@@ -129,7 +130,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void start() {
 		/* Make snake head turned to right because snake body is reseted */
-		this.headImagePath = ImagePathes.HEAD_RIGHT;
+		this.headImagePath = ImagePaths.HEAD_RIGHT;
 		this.food.addFood();
 		/* Initialize the game to start from the scratch */
 		this.snake.initialize();
@@ -166,19 +167,33 @@ public class GamePanel extends JPanel implements ActionListener {
 		if(score > highScore) {
 
 			try (final FileWriter fileWriter = 
-					new FileWriter(new File("src/com/coder/snake/files/scoreBoard.txt"))){
+					new FileWriter(new File(FilePaths.SCORE_MEMORY))) {
 				
 				fileWriter.write(String.valueOf(score));
 				fileWriter.flush();
 				
 			} catch (IOException ex) {
-				JOptionPane.showMessageDialog(this, ex.getLocalizedMessage());
+				JOptionPane.showMessageDialog(this,
+						"Sorry we couldn't find score board file!\nSo cannot save your high score right now!",
+						"File path error!", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		refresh();
 	}
 	
-	private void refresh() {
+	public void restart() {
+		this.timer.stop();
+		this.score = 0;
+		this.snake = new Snake();
+		headImagePath = ImagePaths.HEAD_RIGHT;
+		this.food = new Food();
+		this.statusMessage = "Press start button!";
+		this.food.eatenCounter = 0;
+		this.snake.gameIsOver = true;
+		this.mute = false;
+	}
+
+	public void refresh() {
 		this.revalidate();
 		this.repaint();
 	}
@@ -348,16 +363,16 @@ public class GamePanel extends JPanel implements ActionListener {
 
 					if (previousPartY < snake.positionY[index]) {
 						// Up
-						tailImagePath = ImagePathes.TAIL_UP;
+						tailImagePath = ImagePaths.TAIL_UP;
 					} else if (previousPartX > snake.positionX[index]) {
 						// Right
-						tailImagePath = ImagePathes.TAIL_RIGHT;
+						tailImagePath = ImagePaths.TAIL_RIGHT;
 					} else if (previousPartY > snake.positionY[index]) {
 						// Down
-						tailImagePath = ImagePathes.TAIL_DOWN;
+						tailImagePath = ImagePaths.TAIL_DOWN;
 					} else if (previousPartX < snake.positionX[index]) {
 						// Left
-						tailImagePath = ImagePathes.TAIL_LEFT;
+						tailImagePath = ImagePaths.TAIL_LEFT;
 					}
 
 					drawTail(index, graphics2d);
@@ -367,22 +382,22 @@ public class GamePanel extends JPanel implements ActionListener {
 					/* body */
 					if (previousPartX > currentPartX && nextPartY < currentPartY || nextPartX > currentPartX && previousPartY < currentPartY) {
 						// Left-Up
-						bodyImagePath = ImagePathes.BODY_CORNER_LEFT_UP;
+						bodyImagePath = ImagePaths.BODY_CORNER_LEFT_UP;
 					} else if (previousPartY > currentPartY && nextPartX > currentPartX || nextPartY > currentPartY && previousPartX > currentPartX) {
 						// Left-Down
-						bodyImagePath = ImagePathes.BODY_CORNER_LEFT_DOWN;
+						bodyImagePath = ImagePaths.BODY_CORNER_LEFT_DOWN;
 					} else if (previousPartY < currentPartY && nextPartX < currentPartX || nextPartY < currentPartY && previousPartX < currentPartX) {
 						// Right-Up
-						bodyImagePath = ImagePathes.BODY_CORNER_RIGHT_UP;
+						bodyImagePath = ImagePaths.BODY_CORNER_RIGHT_UP;
 					} else if (previousPartX < currentPartX && nextPartY > currentPartY || nextPartX < currentPartX && previousPartY > currentPartY) {
 						// Right-Down
-						bodyImagePath = ImagePathes.BODY_CORNER_RIGHT_DOWN;
+						bodyImagePath = ImagePaths.BODY_CORNER_RIGHT_DOWN;
 					} else if (previousPartY > currentPartY || previousPartY < currentPartY) {
 						// Down - Up
-						bodyImagePath = ImagePathes.BODY_UP;
+						bodyImagePath = ImagePaths.BODY_UP;
 					} else if (previousPartX < currentPartX || previousPartX > currentPartX) {
 						// Left - Right 
-						bodyImagePath = ImagePathes.BODY_RIGHT;
+						bodyImagePath = ImagePaths.BODY_RIGHT;
 					}
 					
 					drawBody(index, graphics2d);
@@ -425,7 +440,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		if (!snake.gameIsOver) {
 			if (snake.direction != Direction.DOWN) {
 				snake.direction = Direction.UP;
-				headImagePath = ImagePathes.HEAD_UP;
+				headImagePath = ImagePaths.HEAD_UP;
 				refresh();
 			}
 		}
@@ -435,7 +450,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		if (!snake.gameIsOver) {
 			if (snake.direction != Direction.UP) {
 				snake.direction = Direction.DOWN;
-				headImagePath = ImagePathes.HEAD_DOWN;
+				headImagePath = ImagePaths.HEAD_DOWN;
 				refresh();
 			}
 		}
@@ -445,7 +460,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		if (!snake.gameIsOver) {
 			if (snake.direction != Direction.LEFT) {
 				snake.direction = Direction.RIGHT;
-				headImagePath = ImagePathes.HEAD_RIGHT;
+				headImagePath = ImagePaths.HEAD_RIGHT;
 				refresh();
 			}
 		}
@@ -455,7 +470,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		if (!snake.gameIsOver) {
 			if (snake.direction != Direction.RIGHT) {
 				snake.direction = Direction.LEFT;
-				headImagePath = ImagePathes.HEAD_LEFT;
+				headImagePath = ImagePaths.HEAD_LEFT;
 				refresh();
 			}
 		}
@@ -473,19 +488,19 @@ public class GamePanel extends JPanel implements ActionListener {
 
 					if ((keyCode == KeyEvent.VK_LEFT) && snake.direction != Direction.RIGHT) {
 						snake.direction = Direction.LEFT;
-						headImagePath = ImagePathes.HEAD_LEFT;
+						headImagePath = ImagePaths.HEAD_LEFT;
 						refresh();
 					} else if ((keyCode == KeyEvent.VK_RIGHT) && snake.direction != Direction.LEFT) {
 						snake.direction = Direction.RIGHT;
-						headImagePath = ImagePathes.HEAD_RIGHT;
+						headImagePath = ImagePaths.HEAD_RIGHT;
 						refresh();
 					} else if ((keyCode == KeyEvent.VK_UP) && snake.direction != Direction.DOWN) {
 						snake.direction = Direction.UP;
-						headImagePath = ImagePathes.HEAD_UP;
+						headImagePath = ImagePaths.HEAD_UP;
 						refresh();
 					} else if ((keyCode == KeyEvent.VK_DOWN) && snake.direction != Direction.UP) {
 						snake.direction = Direction.DOWN;
-						headImagePath = ImagePathes.HEAD_DOWN;
+						headImagePath = ImagePaths.HEAD_DOWN;
 						refresh();
 					}
 
@@ -507,11 +522,11 @@ public class GamePanel extends JPanel implements ActionListener {
 			if (mute) {
 				mute = false;
 				currentControlPanel.soundButton.setIcon(new 
-						ImageIcon(ImagePathes.UNMUTE_IMG));
+				ImageIcon(this.getClass().getResource(ImagePaths.UNMUTE_IMG)));
 			} else {
 				mute = true;
 				currentControlPanel.soundButton.setIcon(new 
-						ImageIcon(ImagePathes.MUTE_IMG));
+				ImageIcon(this.getClass().getResource(ImagePaths.MUTE_IMG)));
 			}
 			break;
 		case "colors":

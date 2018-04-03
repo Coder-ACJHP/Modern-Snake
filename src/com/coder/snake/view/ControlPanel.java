@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -20,12 +21,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import com.coder.snake.files.FilePaths;
+import com.coder.snake.icons.ImagePaths;
 
 public class ControlPanel extends JPanel {
 	
@@ -79,7 +84,7 @@ public class ControlPanel extends JPanel {
 		colorChooserButton.setOpaque(true);
 		colorChooserButton.setBackground(new Color(255, 255, 255));
 		colorChooserButton.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		colorChooserButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/color-palette.png")));
+		colorChooserButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.COLOR_PALETTE)));
 		colorChooserButton.setBounds(252, 363, 34, 29);
 		colorChooserButton.setPreferredSize(new Dimension(50, 29));
 		contentpanel.add(colorChooserButton);
@@ -101,28 +106,28 @@ public class ControlPanel extends JPanel {
 		
 		upButton = new JButton("");
 		upButton.setActionCommand("up");
-		upButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/up.png")));
+		upButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.ARROW_UP)));
 		upButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		upButton.setBounds(104, 10, 89, 38);
 		buttonsPanel.add(upButton);
 		
 		leftButton = new JButton("");
 		leftButton.setActionCommand("left");
-		leftButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/left.png")));
+		leftButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.ARROW_LEFT)));
 		leftButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		leftButton.setBounds(12, 52, 89, 38);
 		buttonsPanel.add(leftButton);
 		
 		downButton = new JButton("");
 		downButton.setActionCommand("down");
-		downButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/down.png")));
+		downButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.ARROW_DOWN)));
 		downButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		downButton.setBounds(104, 52, 89, 38);
 		buttonsPanel.add(downButton);
 		
 		rightButton = new JButton("");
 		rightButton.setActionCommand("right");
-		rightButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/right.png")));
+		rightButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.ARROW_RIGHT)));
 		rightButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		rightButton.setBounds(196, 52, 91, 38);
 		buttonsPanel.add(rightButton);
@@ -142,7 +147,7 @@ public class ControlPanel extends JPanel {
 		
 		final JLabel lblYourScoreIs = new JLabel("Your score is");
 		lblYourScoreIs.setForeground(Color.WHITE);
-		lblYourScoreIs.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblYourScoreIs.setFont(new Font("Lucida Grande", Font.BOLD, 16));
 		lblYourScoreIs.setHorizontalAlignment(SwingConstants.CENTER);
 		lblYourScoreIs.setBounds(88, 161, 111, 24);
 		contentpanel.add(lblYourScoreIs);
@@ -160,7 +165,7 @@ public class ControlPanel extends JPanel {
 		panelIcon = new JLabel("");
 		panelIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		panelIcon.setHorizontalTextPosition(SwingConstants.CENTER);
-		panelIcon.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/snake.png")));
+		panelIcon.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.GAME_ICON)));
 		panelIcon.setBounds(31, 18, 229, 90);
 		contentpanel.add(panelIcon);
 		
@@ -169,7 +174,7 @@ public class ControlPanel extends JPanel {
 		soundButton.setActionCommand("sound");
 		soundButton.setBackground(new Color(255, 255, 255));
 		soundButton.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-		soundButton.setIcon(new ImageIcon(ControlPanel.class.getResource("/com/coder/snake/icons/spiker.png")));
+		soundButton.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.UNMUTE_IMG)));
 		soundButton.setPreferredSize(new Dimension(50, 29));
 		soundButton.setBounds(252, 331, 34, 29);
 		contentpanel.add(soundButton);
@@ -235,7 +240,7 @@ public class ControlPanel extends JPanel {
 		final JLabel lblHighScore = new JLabel("High score : ");
 		lblHighScore.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHighScore.setForeground(new Color(220, 20, 60));
-		lblHighScore.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblHighScore.setFont(new Font("Lucida Grande", Font.BOLD, 16));
 		lblHighScore.setBounds(51, 238, 111, 24);
 		contentpanel.add(lblHighScore);
 		
@@ -244,7 +249,7 @@ public class ControlPanel extends JPanel {
 		highScoreBoard.setVerticalAlignment(SwingConstants.CENTER);
 		highScoreBoard.setHorizontalAlignment(SwingConstants.LEFT);
 		highScoreBoard.setForeground(Color.WHITE);
-		highScoreBoard.setFont(new Font("Dialog", Font.BOLD, 20));
+		highScoreBoard.setFont(new Font("Lucida Grande", Font.BOLD, 20));
 		highScoreBoard.setBorder(null);
 		highScoreBoard.setBackground(Color.WHITE);
 		highScoreBoard.setBounds(167, 238, 77, 25);
@@ -257,17 +262,22 @@ public class ControlPanel extends JPanel {
 		contentpanel.add(guideLinesLbl);
 		
 		guideChkBox = new JCheckBox("");
+		guideChkBox.setOpaque(false);
 		guideChkBox.setActionCommand("guideLines");
 		guideChkBox.setHorizontalAlignment(SwingConstants.CENTER);
 		guideChkBox.setBounds(252, 430, 34, 23);
 		contentpanel.add(guideChkBox);
 	
-		try(final Stream<String> stream = Files.lines(Paths.get("src/com/coder/snake/files/scoreBoard.txt"))){
+		try (final Stream<String> stream = Files
+				.lines(Paths.get(this.getClass().getResource(FilePaths.SCORE_MEMORY).toURI()))) {
+
 			stream.forEach(line-> {
 				highScoreBoard.setText(line);
 			});
-		} catch (IOException e) {
-			e.printStackTrace();
+
+		} catch (IOException | URISyntaxException e) {
+			JOptionPane.showMessageDialog(this, "Sorry we couldn't find score board file!", "File path error!",
+					JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

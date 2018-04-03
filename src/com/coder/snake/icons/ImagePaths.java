@@ -1,6 +1,18 @@
 package com.coder.snake.icons;
 
-public class ImagePathes {
+public class ImagePaths {
+
+	public final static String GAME_ICON = "/com/coder/snake/icons/snake.png";
+	public final static String ARROW_UP = "/com/coder/snake/icons/up.png";
+	public final static String ARROW_DOWN = "/com/coder/snake/icons/down.png";
+	public final static String ARROW_LEFT = "/com/coder/snake/icons/left.png";
+	public final static String ARROW_RIGHT = "/com/coder/snake/icons/right.png";
+	public final static String COLOR_PALETTE = "/com/coder/snake/icons/color-palette.png";
+
+	public final static String MENU_EXIT = "/com/coder/snake/icons/menu-exit.png";
+	public final static String MENU_RESTART = "/com/coder/snake/icons/menu-restart.png";
+	public final static String MENU_SOURCE_CODE = "/com/coder/snake/icons/menu-sourceCode.png";
+	public final static String MENU_HOW_TO_PLAY = "/com/coder/snake/icons/menu-howToPlay.png";
 
 	public final static String SNAIL = "/com/coder/snake/icons/snail.png";
 	public final static String RAT = "/com/coder/snake/icons/rat.png";
@@ -21,5 +33,5 @@ public class ImagePathes {
 	public final static String TAIL_UP = "/com/coder/snake/icons/snake-tail-up.png";
 	public final static String TAIL_DOWN = "/com/coder/snake/icons/snake-tail-down.png";
 	
-	public ImagePathes() {}
+	public ImagePaths() {}
 }

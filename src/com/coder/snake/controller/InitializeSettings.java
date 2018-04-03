@@ -19,7 +19,12 @@ public class InitializeSettings {
 		mainBoard.setControlPanel(controlPanel);
 		mainBoard.setGamePanel(gamePanel);
 		mainBoard.initialize();
-		
+
+		mainBoard.restart.addActionListener(e -> {
+			gamePanel.restart();
+			gamePanel.refresh();
+		});
+
 	}
 	
 
