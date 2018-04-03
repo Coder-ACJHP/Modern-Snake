@@ -6,7 +6,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.coder.snake.controller.InitializeSettings;
 
-public class Snake_Modern {
+public class Modern_Snake {
 
 	public static void main(String[] args) {
 			

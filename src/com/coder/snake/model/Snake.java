@@ -53,6 +53,7 @@ public class Snake {
 				this.gameIsOver = true;
 		}
 
+		/* Control the snake hits the walls */
 		if (positionX[0] >= GamePanel.WIDTH || positionX[0] < 0 || positionY[0] >= GamePanel.HEIGHT
 				|| positionY[0] < 0) {
 			this.gameIsOver = true;
