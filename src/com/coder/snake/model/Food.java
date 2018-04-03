@@ -10,12 +10,16 @@ public class Food {
 	private Snake snake;
 	public int positionX;
 	public int positionY;
+	public int randomX;
+	public int randomY;
 	public int masterPositionX;
 	public int masterPositionY;
 	public int eatenCounter = 0;
 	private CountDown countDown;
-	public int interval;
+	public int interval = 6;
 	private Timer timer;
+	private boolean isValidXY = false;
+	public boolean showCounter = false;
 
 	public Food() {
 		snake = new Snake();
@@ -23,34 +27,57 @@ public class Food {
 
 	public void addFood() {
 		
-		int randomX = (int) (Math.random() * GamePanel.WIDTH);
-		int randomY = (int) (Math.random() * GamePanel.HEIGHT);
-		for (int i = 0; i < snake.length; i++) {
-			if(snake.positionX[i] != randomX && snake.positionY[i] != randomY) {
-				positionX = randomX;
-				positionY = randomY;
+		isValidXY = false;
+		while (!isValidXY) {
+			
+			randomX = (int) (Math.random() * GamePanel.WIDTH);
+			randomY = (int) (Math.random() * GamePanel.HEIGHT);
+						
+			for (int i = 0; i < snake.length; i++) {
+				positionX = snake.positionX[i];
+				positionY = snake.positionY[i];
+				
+				if(positionX != randomX && positionY != randomY) {
+					isValidXY = true;
+					break;
+				}
 			}
-		}
-		
-		
+			
+		} 
+
 	}
 
 	public void addBonusFood() {
-		int randomX = (int) (Math.random() * GamePanel.WIDTH);
-		int randomY = (int) (Math.random() * GamePanel.HEIGHT);
-		for (int i = 0; i < snake.length; i++) {
-			if(snake.positionX[i] != randomX && snake.positionY[i] != randomY) {
-				masterPositionX = randomX;
-				masterPositionY = randomY;
+		
+		showCounter = true;
+		isValidXY = false;
+		
+		while (!isValidXY) {
+			
+			masterPositionX = (int) (Math.random() * GamePanel.WIDTH);
+			masterPositionY = (int) (Math.random() * GamePanel.HEIGHT);
+						
+			for (int i = 0; i < snake.length; i++) {
+				randomX = snake.positionX[i];
+				randomY = snake.positionY[i];
+				
+				if(masterPositionX != randomX && masterPositionY != randomY) {
+					isValidXY = true;
+					break;
+				}
 			}
-		}
-		countDown = new CountDown(5);
+			
+		} 
+		
+		countDown = new CountDown(6);
 		countDown.count();
 	}
 
 	public void deleteBonusFood() {
+		
+		showCounter = false;
 		timer.cancel();
-		this.interval = 0;
+		this.interval = 1;
 		masterPositionX = GamePanel.WIDTH * GamePanel.WIDTH;
 		masterPositionY = GamePanel.HEIGHT * GamePanel.HEIGHT;
 	}
@@ -79,7 +106,7 @@ public class Food {
 		}
 
 		private void control(Timer theTimer, int interval) {
-			if (interval > 0) {
+			if (interval > 1) {
 				return;
 			} else {
 				deleteBonusFood();

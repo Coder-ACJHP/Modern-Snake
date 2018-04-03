@@ -56,7 +56,6 @@ public class MainBoard extends JFrame {
 		container.setBackground(Color.DARK_GRAY);
 		final BorderLayout containerLayout = new BorderLayout();
 		container.setLayout(containerLayout);
-		
 		container.add(gamePanel, BorderLayout.CENTER);
 		container.add(controlPanel, BorderLayout.EAST);
 		
