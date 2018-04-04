@@ -25,7 +25,7 @@
 <h2>How to export the game as single executable jar 'independed platform' ?</h2>
 <p>Just add this <code>maven-assembly-plugin</code> into your POM.XML file then run the following code in your IDE or Terminal : </p>
 <code>mvn clean compile assembly:single</code><br><br>
-  <p>Or download the game as <b>(.app) for MacOS</b> or <b>(.jar) for all OS</b> from this link: <a https://github.com/Coder-ACJHP/Modern-Snake/releases">Modern-Snake-1.2.1 releases</a></p>
+  <p>Or download the game as <b>(.app) for MacOS</b> or <b>(.jar) for all OS</b> from this link: <a href="https://github.com/Coder-ACJHP/Modern-Snake/releases">Modern-Snake-1.2.1 releases</a></p>
 <p>That's it 😍🎉 enjoy with your time 👍</p>
 
 <p>For any question 🤔 please 📧 me at : <a href="mailto:hexa.octabin@gmail.com">hexa.octabin@gmail.com</a></p>
