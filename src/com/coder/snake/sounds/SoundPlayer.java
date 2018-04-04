@@ -1,7 +1,6 @@
 package com.coder.snake.sounds;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -11,7 +10,7 @@ import javazoom.jl.player.Player;
 public class SoundPlayer {
 
 	private Player mediaPlayer;
-	private FileInputStream fileInputStream;
+	private InputStream inputStream;
 	
 	public SoundPlayer() {
 		
@@ -21,8 +20,8 @@ public class SoundPlayer {
 	public void foodEaten() {
 		new Thread(()-> {
 			try {
-				fileInputStream = new FileInputStream(new File(getClass().getResource(SoundTrackPaths.EAT_FOOD_CLIP_PATH).getFile()));
-				mediaPlayer = new Player(fileInputStream);
+				inputStream = SoundPlayer.class.getResourceAsStream(SoundTrackPaths.EAT_FOOD_CLIP_PATH);
+				mediaPlayer = new Player(inputStream);
 				mediaPlayer.play();
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(new JDialog(), "Sorry we couldn't find sound track file!", "File path error!",
@@ -34,8 +33,8 @@ public class SoundPlayer {
 	public void gameOver() {
 		new Thread(()-> {
 			try {
-				fileInputStream = new FileInputStream(new File(getClass().getResource(SoundTrackPaths.GAME_OVER_CLIP_PATH).getFile()));
-				mediaPlayer = new Player(fileInputStream);
+				inputStream = SoundPlayer.class.getResourceAsStream(SoundTrackPaths.GAME_OVER_CLIP_PATH);
+				mediaPlayer = new Player(inputStream);
 				mediaPlayer.play();
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(new JDialog(), "Sorry we couldn't find sound track file!", "File path error!",
