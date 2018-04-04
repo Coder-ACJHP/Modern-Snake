@@ -10,11 +10,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.io.InputStreamReader;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -49,6 +47,7 @@ public class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	public ControlPanel() {
+		
 		setPreferredSize(new Dimension(300, 700));
 		setBorder(new SoftBevelBorder(BevelBorder.RAISED, Color.GRAY, null, null, null));
 		setLayout(new BorderLayout(0, 0));
@@ -268,14 +267,11 @@ public class ControlPanel extends JPanel {
 		guideChkBox.setBounds(252, 430, 34, 23);
 		contentpanel.add(guideChkBox);
 	
-		try (final Stream<String> stream = Files
-				.lines(Paths.get(this.getClass().getResource(FilePaths.SCORE_MEMORY).toURI()))) {
-
-			stream.forEach(line-> {
-				highScoreBoard.setText(line);
-			});
-
-		} catch (IOException | URISyntaxException e) {
+		try  {
+			final BufferedReader br = new BufferedReader(
+					new InputStreamReader(getClass().getResourceAsStream(FilePaths.SCORE_MEMORY),"UTF-8"));
+			highScoreBoard.setText(br.readLine());
+		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Sorry we couldn't find score board file!", "File path error!",
 					JOptionPane.WARNING_MESSAGE);
 		}

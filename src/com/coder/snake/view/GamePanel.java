@@ -34,7 +34,7 @@ import com.coder.snake.icons.ImagePaths;
 import com.coder.snake.model.Direction;
 import com.coder.snake.model.Food;
 import com.coder.snake.model.Snake;
-import com.coder.snake.model.SoundPlayer;
+import com.coder.snake.sounds.SoundPlayer;
 
 public class GamePanel extends JPanel implements ActionListener {
 	
@@ -53,6 +53,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	public int difficult = 42;
 	private String snailImagePath = ImagePaths.SNAIL;
 	private String ratImagePath = ImagePaths.RAT;
+	
 	private String headImagePath = ImagePaths.HEAD_RIGHT;
 	private String bodyImagePath = ImagePaths.BODY_RIGHT;
 	private String tailImagePath = ImagePaths.TAIL_RIGHT;
@@ -86,10 +87,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 	
 	public void initialize() {
+		
 		snake.move();
 
-		
 		if ((snake.positionX[0] == food.randomX) && (snake.positionY[0] == food.randomY)) {
+			
+			/* Play sound clip if the game not muted */
 			if (!mute) {
 				mediaPlayer.foodEaten();
 			}
@@ -101,12 +104,19 @@ public class GamePanel extends JPanel implements ActionListener {
 
 			if (food.eatenCounter % 5 == 0) {
 				food.addBonusFood();
+			} else {
+				/* Hide bonus bottom counter */
+				this.food.showCounter = false;
 			}
 
 		} else if((snake.positionX[0] == food.masterPositionX) && (snake.positionY[0] == food.masterPositionY)) {
+			
+			/* Play sound clip if the game not muted */
 			if (!mute) {
 				mediaPlayer.foodEaten();
 			}
+			
+			/* The bonus food is eaten so we have to hide it */
 			food.deleteBonusFood();
 			changeScore(20);
 			snake.length = snake.length + 4;
@@ -130,7 +140,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void start() {
 		/* Make snake head turned to right because snake body is reseted */
-		this.headImagePath = ImagePaths.HEAD_RIGHT;
+		setHeadImagePath(ImagePaths.HEAD_RIGHT);
 		this.food.addFood();
 		/* Initialize the game to start from the scratch */
 		this.snake.initialize();
@@ -214,6 +224,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.hardRdBtn.setEnabled(true);
 	}
 
+	/* Increase score method */
 	private void changeScore(int theDifficult) {
 		switch (theDifficult) {
 		case 64:
@@ -281,21 +292,21 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	public void drawHead(int index, Graphics2D g2D) {
 
-		final Image head = new ImageIcon(this.getClass().getResource(headImagePath)).getImage();
+		final Image head = new ImageIcon(this.getClass().getResource(getHeadImagePath())).getImage();
 		g2D.drawImage(head, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
 				CELL_SIZE, null);
 	}
 
 	public void drawTail(int index, Graphics2D g2D) {
 
-		final Image tail = new ImageIcon(this.getClass().getResource(tailImagePath)).getImage();
+		final Image tail = new ImageIcon(this.getClass().getResource(getTailImagePath())).getImage();
 		g2D.drawImage(tail, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
 				CELL_SIZE, null);
 	}
 
 	public void drawBody(int index, Graphics2D g2D) {
 
-		final Image body = new ImageIcon(this.getClass().getResource(bodyImagePath)).getImage();
+		final Image body = new ImageIcon(this.getClass().getResource(getBodyImagePath())).getImage();
 		g2D.drawImage(body, snake.positionX[index] * CELL_SIZE, snake.positionY[index] * CELL_SIZE, CELL_SIZE,
 				CELL_SIZE, null);
 	}
@@ -317,8 +328,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		refresh();
 	}
 
-	
-	protected void applyQualityRenderingHints(Graphics2D g2d) {
+	/* Change some graphics settings */
+	private void applyQualityRenderingHints(Graphics2D g2d) {
+		
 		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -363,16 +375,16 @@ public class GamePanel extends JPanel implements ActionListener {
 
 					if (previousPartY < snake.positionY[index]) {
 						// Up
-						tailImagePath = ImagePaths.TAIL_UP;
+						setTailImagePath(ImagePaths.TAIL_UP);
 					} else if (previousPartX > snake.positionX[index]) {
 						// Right
-						tailImagePath = ImagePaths.TAIL_RIGHT;
+						setTailImagePath(ImagePaths.TAIL_RIGHT);
 					} else if (previousPartY > snake.positionY[index]) {
 						// Down
-						tailImagePath = ImagePaths.TAIL_DOWN;
+						setTailImagePath(ImagePaths.TAIL_DOWN);
 					} else if (previousPartX < snake.positionX[index]) {
 						// Left
-						tailImagePath = ImagePaths.TAIL_LEFT;
+						setTailImagePath(ImagePaths.TAIL_LEFT);
 					}
 
 					drawTail(index, graphics2d);
@@ -382,22 +394,22 @@ public class GamePanel extends JPanel implements ActionListener {
 					/* body */
 					if (previousPartX > currentPartX && nextPartY < currentPartY || nextPartX > currentPartX && previousPartY < currentPartY) {
 						// Left-Up
-						bodyImagePath = ImagePaths.BODY_CORNER_LEFT_UP;
+						setBodyImagePath(ImagePaths.BODY_CORNER_LEFT_UP);
 					} else if (previousPartY > currentPartY && nextPartX > currentPartX || nextPartY > currentPartY && previousPartX > currentPartX) {
 						// Left-Down
-						bodyImagePath = ImagePaths.BODY_CORNER_LEFT_DOWN;
+						setBodyImagePath(ImagePaths.BODY_CORNER_LEFT_DOWN);
 					} else if (previousPartY < currentPartY && nextPartX < currentPartX || nextPartY < currentPartY && previousPartX < currentPartX) {
 						// Right-Up
-						bodyImagePath = ImagePaths.BODY_CORNER_RIGHT_UP;
+						setBodyImagePath(ImagePaths.BODY_CORNER_RIGHT_UP);
 					} else if (previousPartX < currentPartX && nextPartY > currentPartY || nextPartX < currentPartX && previousPartY > currentPartY) {
 						// Right-Down
-						bodyImagePath = ImagePaths.BODY_CORNER_RIGHT_DOWN;
+						setBodyImagePath(ImagePaths.BODY_CORNER_RIGHT_DOWN);
 					} else if (previousPartY > currentPartY || previousPartY < currentPartY) {
 						// Down - Up
-						bodyImagePath = ImagePaths.BODY_UP;
+						setBodyImagePath(ImagePaths.BODY_UP);
 					} else if (previousPartX < currentPartX || previousPartX > currentPartX) {
 						// Left - Right 
-						bodyImagePath = ImagePaths.BODY_RIGHT;
+						setBodyImagePath(ImagePaths.BODY_RIGHT);
 					}
 					
 					drawBody(index, graphics2d);
@@ -406,15 +418,17 @@ public class GamePanel extends JPanel implements ActionListener {
 				
 		}
 		
-				
+		/* Draw normal food */		
 		drawFood(food.randomX, food.randomY, graphics2d);
 		
+		/* Draw bonus food */
 		if(food.eatenCounter > 0 && food.eatenCounter % 5 == 0) {
 			drawBonusFood(food.masterPositionX, food.masterPositionY, graphics2d);
 		}
-		
+		/* Draw messages */
 		drawMessage(graphics2d);
 
+		/* Release resources */
 		graphics2d.dispose();
 	}
 
@@ -438,40 +452,36 @@ public class GamePanel extends JPanel implements ActionListener {
 	 */
 	public void moveToUp() {
 		if (!snake.gameIsOver) {
-			if (snake.direction != Direction.DOWN) {
-				snake.direction = Direction.UP;
-				headImagePath = ImagePaths.HEAD_UP;
-				refresh();
+			if (snake.getDirection() != Direction.DOWN) {							
+				snake.setDirection(Direction.UP);
+				setHeadImagePath(ImagePaths.HEAD_UP);
 			}
 		}
 	}
 	
 	public void moveToDown() {
 		if (!snake.gameIsOver) {
-			if (snake.direction != Direction.UP) {
-				snake.direction = Direction.DOWN;
-				headImagePath = ImagePaths.HEAD_DOWN;
-				refresh();
+			if (snake.getDirection() != Direction.UP) {
+				snake.setDirection(Direction.DOWN);
+				setHeadImagePath(ImagePaths.HEAD_DOWN);
 			}
 		}
 	}
 	
 	public void moveToRight() {
 		if (!snake.gameIsOver) {
-			if (snake.direction != Direction.LEFT) {
-				snake.direction = Direction.RIGHT;
-				headImagePath = ImagePaths.HEAD_RIGHT;
-				refresh();
+			if (snake.getDirection() != Direction.LEFT) {							
+				snake.setDirection(Direction.RIGHT);
+				setHeadImagePath(ImagePaths.HEAD_RIGHT);
 			}
 		}
 	}
 	
 	public void moveToLeft() {
 		if (!snake.gameIsOver) {
-			if (snake.direction != Direction.RIGHT) {
-				snake.direction = Direction.LEFT;
-				headImagePath = ImagePaths.HEAD_LEFT;
-				refresh();
+			if (snake.getDirection() != Direction.RIGHT) {							
+				snake.setDirection(Direction.LEFT);
+				setHeadImagePath(ImagePaths.HEAD_LEFT);							
 			}
 		}
 	}
@@ -484,25 +494,36 @@ public class GamePanel extends JPanel implements ActionListener {
 			public synchronized void keyPressed(KeyEvent e) {
 
 				if (!snake.gameIsOver) {
-					Integer keyCode = e.getKeyCode();
 
-					if ((keyCode == KeyEvent.VK_LEFT) && snake.direction != Direction.RIGHT) {
-						snake.direction = Direction.LEFT;
-						headImagePath = ImagePaths.HEAD_LEFT;
-						refresh();
-					} else if ((keyCode == KeyEvent.VK_RIGHT) && snake.direction != Direction.LEFT) {
-						snake.direction = Direction.RIGHT;
-						headImagePath = ImagePaths.HEAD_RIGHT;
-						refresh();
-					} else if ((keyCode == KeyEvent.VK_UP) && snake.direction != Direction.DOWN) {
-						snake.direction = Direction.UP;
-						headImagePath = ImagePaths.HEAD_UP;
-						refresh();
-					} else if ((keyCode == KeyEvent.VK_DOWN) && snake.direction != Direction.UP) {
-						snake.direction = Direction.DOWN;
-						headImagePath = ImagePaths.HEAD_DOWN;
-						refresh();
+					switch (e.getKeyCode()) {
+					case KeyEvent.VK_LEFT:
+						if (snake.getDirection() != Direction.RIGHT) {							
+							snake.setDirection(Direction.LEFT);
+							setHeadImagePath(ImagePaths.HEAD_LEFT);							
+						}
+						break;
+					case KeyEvent.VK_RIGHT:
+						if (snake.getDirection() != Direction.LEFT) {							
+							snake.setDirection(Direction.RIGHT);
+							setHeadImagePath(ImagePaths.HEAD_RIGHT);
+						}
+						break;
+					case KeyEvent.VK_UP:
+						if (snake.getDirection() != Direction.DOWN) {							
+							snake.setDirection(Direction.UP);
+							setHeadImagePath(ImagePaths.HEAD_UP);
+						}
+						break;
+					case KeyEvent.VK_DOWN:
+						if (snake.getDirection() != Direction.UP) {
+							snake.setDirection(Direction.DOWN);
+							setHeadImagePath(ImagePaths.HEAD_DOWN);
+						}
+						break;
+					default:
+						break;
 					}
+					
 
 				}
 
@@ -573,5 +594,30 @@ public class GamePanel extends JPanel implements ActionListener {
 			break;
 		}
 
+	}
+
+	/* Getters and setters */
+	public String getHeadImagePath() {
+		return headImagePath;
+	}
+
+	public void setHeadImagePath(String headImagePath) {
+		this.headImagePath = headImagePath;
+	}
+
+	public String getBodyImagePath() {
+		return bodyImagePath;
+	}
+
+	public void setBodyImagePath(String bodyImagePath) {
+		this.bodyImagePath = bodyImagePath;
+	}
+
+	public String getTailImagePath() {
+		return tailImagePath;
+	}
+
+	public void setTailImagePath(String tailImagePath) {
+		this.tailImagePath = tailImagePath;
 	}
 }

@@ -38,29 +38,38 @@ public class Snake {
 				positionY[index] = positionY[index - 1];
 			}
 
-			if (direction == Direction.RIGHT)
+			if (getDirection() == Direction.RIGHT) {
 				positionX[0]++;
-			if (direction == Direction.DOWN)
+			} else if (getDirection() == Direction.DOWN) {
 				positionY[0]++;
-			if (direction == Direction.LEFT)
+			} else if (getDirection() == Direction.LEFT) {
 				positionX[0]--;
-			if (direction == Direction.UP)
+			} else if (getDirection() == Direction.UP) {
 				positionY[0]--;
+			}
 
 		/* If the snake hits itself (body) finish the game */
-		for (int index = length - 1; index > 0; index--) {
+		for (int index = length; index > 0; index--) {
 			if ((positionX[0] == positionX[index]) && (positionY[0] == positionY[index]))
 				this.gameIsOver = true;
 		}
 
 		/* Control the snake hits the walls */
-		if (positionX[0] >= GamePanel.WIDTH || positionX[0] < 0 || positionY[0] >= GamePanel.HEIGHT
-				|| positionY[0] < 0) {
+		if (positionX[0] > GamePanel.WIDTH || positionX[0] < 0 
+				|| positionY[0] > GamePanel.HEIGHT || positionY[0] < 0) {
 			this.gameIsOver = true;
 		}
 
 		if (length < 4)
 			length = 4;
+	}
+
+	public Enum<Direction> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Enum<Direction> direction) {
+		this.direction = direction;
 	}
 	
 }
