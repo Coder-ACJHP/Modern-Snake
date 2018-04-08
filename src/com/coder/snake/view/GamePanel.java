@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -29,7 +28,7 @@ import javax.swing.Timer;
 
 import com.coder.snake.files.FilePaths;
 import com.coder.snake.icons.ImagePaths;
-import com.coder.snake.model.Direction;
+import com.coder.snake.model.Directions;
 import com.coder.snake.model.Food;
 import com.coder.snake.model.Snake;
 import com.coder.snake.sounds.SoundPlayer;
@@ -40,8 +39,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private static final int CELL_SIZE = 21;
 	public static int WIDTH;
 	public static int HEIGHT;
-	final Color topColor = Color.decode("#02CCFF");
-	final Color bottomColor = Color.decode("#0180A0");
+	final Color topColor = Color.decode("#0075FF");
 
 	private Food food;
 	private Snake snake;
@@ -57,10 +55,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	private String tailImagePath = ImagePaths.TAIL_RIGHT;
 	/* Game level (speed) */
 	private boolean mute = false;
+	private boolean gameIsPaused = false;
 	private SoundPlayer mediaPlayer;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
-	private String statusMessage = "Press start or spacebar on keyboard!";
+	private String statusMessage = "Press start or\n spacebar button!";
+	private static String secondStausMessage;
 
 	public GamePanel(ControlPanel controlPanel, final Dimension displaySize) {
 		
@@ -75,7 +75,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
-	    	    
+	    
+	    
 	    highScore = Integer.valueOf(currentControlPanel.highScoreBoard.getText());
 		snake = new Snake();
 		food = new Food();
@@ -119,7 +120,7 @@ public class GamePanel extends JPanel implements ActionListener {
 			/* The bonus food is eaten so we have to hide it */
 			food.deleteBonusFood();
 			changeScore(20);
-			snake.length = snake.length + 4;
+			snake.length++;
 		}
 
 		/* If user earn new high score show it live */
@@ -148,6 +149,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		this.score = 0;
 		timer.start();
 		this.statusMessage = "";
+		secondStausMessage = "";
 		this.snake.gameIsOver = false;
 		this.food.eatenCounter = 0;
 		refresh();
@@ -156,6 +158,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void pause() {
 		timer.stop();
 		statusMessage = "Paused!";
+		secondStausMessage = "Press resume or\n spacebar button!";
+		gameIsPaused = true;
 		currentControlPanel.pauseButton.setText("Resume");
 		currentControlPanel.pauseButton.setActionCommand("resume");
 		refresh();
@@ -164,6 +168,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void resume() {
 		timer.restart();
 		statusMessage = "";
+		secondStausMessage = "";
+		gameIsPaused = false;
 		currentControlPanel.pauseButton.setText("Pause");
 		currentControlPanel.pauseButton.setActionCommand("pause");
 		refresh();
@@ -172,6 +178,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void gameOver() {
 		timer.stop();
 		statusMessage = "Game over!";
+		secondStausMessage = "Press start or\n spacebar button!";
 		prepareButtonsForGameOver();
 		
 		if(score > highScore) {
@@ -274,17 +281,31 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 	
 	public void drawMessage(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		Font font = new Font("Lucida Grande", Font.BOLD, 50);
+		g.setColor(Color.decode("#5076F9"));
+		Font font = new Font("SansSerif", Font.BOLD, 60);
 		FontMetrics fontMetrics = getFontMetrics(font);
 		g.setFont(font);
-		g.drawString(this.statusMessage, (getWidth() - fontMetrics.stringWidth(statusMessage)) / 2, getHeight() / 2);
-
+				
+		int posiY = 250;
+		
+		for (String line: statusMessage.split("\n")) {
+			g.drawString(line, (getWidth() - fontMetrics.stringWidth(line)) / 2, posiY += g.getFontMetrics().getHeight());
+		}
+		
+		
+		if(secondStausMessage != null) {
+			
+			font = new Font("SansSerif", Font.BOLD, 30);
+			fontMetrics = getFontMetrics(font);
+			g.setFont(font);
+			g.drawString(secondStausMessage, (getWidth() - fontMetrics.stringWidth(secondStausMessage)) / 2, 400);
+		}
+		
 		if (this.food.showCounter) {
 			
 			int initialWidth = 163;
 			int drawingWidth = this.food.interval * initialWidth;
-			g.setPaint(new GradientPaint(0, 10, bottomColor, initialWidth, 10, topColor));
+			g.setPaint(topColor);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .8f));
 			g.fillRect(0, getHeight()-10, drawingWidth, 10);
 			
@@ -450,8 +471,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	 */
 	public void moveToUp() {
 		if (!snake.gameIsOver) {
-			if (snake.getDirection() != Direction.DOWN) {							
-				snake.setDirection(Direction.UP);
+			if (snake.getRouter() != Directions.DOWN) {							
+				snake.setRouter(Directions.UP);
 				setHeadImagePath(ImagePaths.HEAD_UP);
 			}
 		}
@@ -459,8 +480,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void moveToDown() {
 		if (!snake.gameIsOver) {
-			if (snake.getDirection() != Direction.UP) {
-				snake.setDirection(Direction.DOWN);
+			if (snake.getRouter() != Directions.UP) {
+				snake.setRouter(Directions.DOWN);
 				setHeadImagePath(ImagePaths.HEAD_DOWN);
 			}
 		}
@@ -468,8 +489,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void moveToRight() {
 		if (!snake.gameIsOver) {
-			if (snake.getDirection() != Direction.LEFT) {							
-				snake.setDirection(Direction.RIGHT);
+			if (snake.getRouter() != Directions.LEFT) {							
+				snake.setRouter(Directions.RIGHT);
 				setHeadImagePath(ImagePaths.HEAD_RIGHT);
 			}
 		}
@@ -477,8 +498,8 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void moveToLeft() {
 		if (!snake.gameIsOver) {
-			if (snake.getDirection() != Direction.RIGHT) {							
-				snake.setDirection(Direction.LEFT);
+			if (snake.getRouter() != Directions.RIGHT) {							
+				snake.setRouter(Directions.LEFT);
 				setHeadImagePath(ImagePaths.HEAD_LEFT);							
 			}
 		}
@@ -490,46 +511,50 @@ public class GamePanel extends JPanel implements ActionListener {
 
 			@Override
 			public synchronized void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-					start();
-				}
 				
-				if (!snake.gameIsOver) {
+				if(snake.gameIsOver && e.getKeyCode() == KeyEvent.VK_SPACE) {
+					start();						
+				} else if(gameIsPaused && e.getKeyCode() == KeyEvent.VK_SPACE) {
+					resume();
+				
+				} else {
 
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_LEFT:
-						if (snake.getDirection() != Direction.RIGHT) {							
-							snake.setDirection(Direction.LEFT);
+						if (snake.getRouter() != Directions.RIGHT) {							
+							snake.setRouter(Directions.LEFT);
 							setHeadImagePath(ImagePaths.HEAD_LEFT);		
 							
 						}
 						break;
 					case KeyEvent.VK_RIGHT:
-						if (snake.getDirection() != Direction.LEFT) {							
-							snake.setDirection(Direction.RIGHT);
+						if (snake.getRouter() != Directions.LEFT) {							
+							snake.setRouter(Directions.RIGHT);
 							setHeadImagePath(ImagePaths.HEAD_RIGHT);
 							
 						}
 						break;
 					case KeyEvent.VK_UP:
-						if (snake.getDirection() != Direction.DOWN) {							
-							snake.setDirection(Direction.UP);
+						if (snake.getRouter() != Directions.DOWN) {							
+							snake.setRouter(Directions.UP);
 							setHeadImagePath(ImagePaths.HEAD_UP);
 						
 						}
 						break;
 					case KeyEvent.VK_DOWN:
-						if (snake.getDirection() != Direction.UP) {
-							snake.setDirection(Direction.DOWN);
+						if (snake.getRouter() != Directions.UP) {
+							snake.setRouter(Directions.DOWN);
 							setHeadImagePath(ImagePaths.HEAD_DOWN);							
 						}
+						break;
+					case KeyEvent.VK_SPACE:
+							pause();
 						break;
 					default:
 						break;
 					}
 
 				}
-
 			}
 
 		};

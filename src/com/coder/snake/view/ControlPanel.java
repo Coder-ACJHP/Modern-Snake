@@ -125,7 +125,7 @@ public class ControlPanel extends JPanel {
 		lblYourScoreIs.setForeground(Color.WHITE);
 		lblYourScoreIs.setFont(new Font("Lucida Grande", Font.BOLD, 16));
 		lblYourScoreIs.setHorizontalAlignment(SwingConstants.CENTER);
-		lblYourScoreIs.setBounds(88, 161, 111, 24);
+		lblYourScoreIs.setBounds(88, 181, 111, 24);
 		contentpanel.add(lblYourScoreIs);
 
 		scoreBoard = new JLabel("0");
@@ -135,14 +135,13 @@ public class ControlPanel extends JPanel {
 		scoreBoard.setFont(new Font("OCR A Extended", Font.BOLD, 30));
 		scoreBoard.setBackground(new Color(255, 255, 255));
 		scoreBoard.setBorder(null);
-		scoreBoard.setBounds(65, 186, 159, 47);
+		scoreBoard.setBounds(65, 206, 159, 47);
 		contentpanel.add(scoreBoard);
 		
-		panelIcon = new JLabel("");
+		panelIcon = new JLabel(new ImageIcon(ControlPanel.class.getResource(ImagePaths.GAME_ICON)));
 		panelIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		panelIcon.setHorizontalTextPosition(SwingConstants.CENTER);
-		panelIcon.setIcon(new ImageIcon(ControlPanel.class.getResource(ImagePaths.GAME_ICON)));
-		panelIcon.setBounds(31, 18, 229, 90);
+		panelIcon.setBounds(31, 18, 229, 115);
 		contentpanel.add(panelIcon);
 		
 		soundButton = new JButton("");
@@ -217,7 +216,7 @@ public class ControlPanel extends JPanel {
 		lblHighScore.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHighScore.setForeground(new Color(220, 20, 60));
 		lblHighScore.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-		lblHighScore.setBounds(51, 254, 111, 24);
+		lblHighScore.setBounds(51, 258, 111, 24);
 		contentpanel.add(lblHighScore);
 		
 		highScoreBoard = new JLabel();
@@ -228,7 +227,7 @@ public class ControlPanel extends JPanel {
 		highScoreBoard.setFont(new Font("Lucida Grande", Font.BOLD, 20));
 		highScoreBoard.setBorder(null);
 		highScoreBoard.setBackground(Color.WHITE);
-		highScoreBoard.setBounds(167, 254, 77, 25);
+		highScoreBoard.setBounds(167, 258, 77, 25);
 		contentpanel.add(highScoreBoard);
 	
 		try  {
@@ -258,7 +257,7 @@ public class ControlPanel extends JPanel {
 		graphics2d.setColor(Color.WHITE);
 		graphics2d.setFont(TEXT_FONT);
 		
-		graphics2d.drawString("Modern Snake", 30, 135);
+		graphics2d.drawString("Modern Snake", 30, 170);
 		
 	}
 

@@ -4,11 +4,11 @@ import com.coder.snake.view.GamePanel;
 
 public class Snake {
 
+	public int router;
 	public int length = 4;
-	private int POSIX = 30;
-	private final static int POSIY = 30;
-	public Enum<Direction> direction;
-	public volatile boolean gameIsOver = false;
+	private int POSIX = 10;
+	private final static int POSIY = 10;
+	public volatile boolean gameIsOver = true;
 
 	public int positionX[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
 	public int positionY[] = new int[GamePanel.WIDTH * GamePanel.HEIGHT];
@@ -28,39 +28,41 @@ public class Snake {
 		positionX[3] = POSIX - 3;
 		positionY[3] = POSIY;
 		length = 4;
-		direction = Direction.RIGHT;
+		setRouter(Directions.RIGHT);
 	}
 
 	public void move() {
 
+		gameIsOver = false;
+		
 			for (int index = length; index > 0; index--) {
 				positionX[index] = positionX[index - 1];
 				positionY[index] = positionY[index - 1];
 			}
 
-			if (getDirection() == Direction.RIGHT) {
+			if (getRouter() == Directions.RIGHT) {
 				positionX[0]++;
-			} else if (getDirection() == Direction.DOWN) {
+			} else if (getRouter() == Directions.DOWN) {
 				positionY[0]++;
-			} else if (getDirection() == Direction.LEFT) {
+			} else if (getRouter() == Directions.LEFT) {
 				positionX[0]--;
-			} else if (getDirection() == Direction.UP) {
+			} else if (getRouter() == Directions.UP) {
 				positionY[0]--;
 			}
 
 
 		/* If the snake hits itself (body) finish the game */
-		for (int index = length-1; index > 0; index--) {
-			if (length > 4) { //if longer than start size...
-				if((positionX[0] == positionX[index]) && (positionY[0] == positionY[index])) {
+		for (int index = length; index > 0; index--) {
+				if((length > 4) && (positionX[0] == positionX[index]) && (positionY[0] == positionY[index])) {
+					setRouter(Directions.NONE);
 					this.gameIsOver = true;
-				}
 			}
 		}
 
 		/* Control the snake hits the walls */
 		if (positionX[0] > GamePanel.WIDTH || positionX[0] < 0 
 				|| positionY[0] > GamePanel.HEIGHT || positionY[0] < 0) {
+			setRouter(Directions.NONE);
 			this.gameIsOver = true;
 		}
 
@@ -68,12 +70,12 @@ public class Snake {
 			length = 4;
 	}
 
-	public Enum<Direction> getDirection() {
-		return direction;
+	public int getRouter() {
+		return router;
 	}
 
-	public void setDirection(Enum<Direction> direction) {
-		this.direction = direction;
+	public void setRouter(int snakeDirection) {
+		this.router = snakeDirection;
 	}
 	
 }
