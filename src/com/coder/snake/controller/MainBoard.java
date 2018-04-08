@@ -33,8 +33,8 @@ public class MainBoard extends JFrame {
 	/**
 	 * 
 	 */
-	private final static int SCREEN_WIDTH = 1280;
-	private final static int SCREEN_HEIGHT = 745;
+	private final static int SCREEN_WIDTH = 1265;
+	private final static int SCREEN_HEIGHT = 738;
 	private JPanel gamePanel;
 	private JPanel container;
 	private Dimension frameSize;

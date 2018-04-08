@@ -1,7 +1,6 @@
 package com.coder.snake.view;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -24,7 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -39,11 +37,11 @@ import com.coder.snake.sounds.SoundPlayer;
 public class GamePanel extends JPanel implements ActionListener {
 	
 	
-	private static final int CELL_SIZE = 15;
-	public static final int WIDTH = 65;
-	public static final int HEIGHT = 46;
-	final Color topColor = Color.decode("#000000");
-	final Color bottomColor = Color.decode("#53346d");
+	private static final int CELL_SIZE = 21;
+	public static int WIDTH;
+	public static int HEIGHT;
+	final Color topColor = Color.decode("#02CCFF");
+	final Color bottomColor = Color.decode("#0180A0");
 
 	private Food food;
 	private Snake snake;
@@ -59,20 +57,21 @@ public class GamePanel extends JPanel implements ActionListener {
 	private String tailImagePath = ImagePaths.TAIL_RIGHT;
 	/* Game level (speed) */
 	private boolean mute = false;
-	private boolean guideLine = false;
 	private SoundPlayer mediaPlayer;
-	private Color flexColor = Color.WHITE;
 	private ControlPanel currentControlPanel;
 	private static final long serialVersionUID = 1L;
-	private String statusMessage = "Press start button!";
+	private String statusMessage = "Press start or spacebar on keyboard!";
 
-	public GamePanel(ControlPanel controlPanel) {
+	public GamePanel(ControlPanel controlPanel, final Dimension displaySize) {
 		
+		WIDTH = displaySize.width / CELL_SIZE;
+		HEIGHT = displaySize.height / CELL_SIZE;
 		this.currentControlPanel = controlPanel;
 		
 		this.setFocusable(true);
 	    this.requestFocusInWindow(true);
-		this.setPreferredSize(new Dimension(900, 720));
+		this.setPreferredSize(displaySize);
+		this.setMaximumSize(displaySize);
 	    this.addFocusListener(customGetFocus());
 	    this.addKeyListener(customKeyAdapter());
 	    controlPanel.addActionToButtons(this);
@@ -84,6 +83,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		timer = new Timer(difficult, e -> {
 	    	initialize();
 	    });
+		
 	}
 	
 	public void initialize() {
@@ -255,6 +255,24 @@ public class GamePanel extends JPanel implements ActionListener {
 		refresh();
 	}
 	
+	public void drawBackground(Graphics2D g) {
+		
+		for (int x = 0; x <= WIDTH * CELL_SIZE; x += CELL_SIZE) {
+			for (int y = 0; y <= HEIGHT * CELL_SIZE; y += CELL_SIZE) {
+				
+				if((x + y) % 2 == 0) {
+					g.setColor(new Color(142, 204, 57));
+				}else {
+					g.setColor(new Color(169, 214, 81));
+					
+				}
+				
+				g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+			}
+		}
+
+	}
+	
 	public void drawMessage(Graphics2D g) {
 		g.setColor(Color.BLACK);
 		Font font = new Font("Lucida Grande", Font.BOLD, 50);
@@ -266,8 +284,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			
 			int initialWidth = 163;
 			int drawingWidth = this.food.interval * initialWidth;
-			g.setPaint(new GradientPaint(0, 10, topColor, initialWidth, 10, bottomColor));
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .4f));
+			g.setPaint(new GradientPaint(0, 10, bottomColor, initialWidth, 10, topColor));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .8f));
 			g.fillRect(0, getHeight()-10, drawingWidth, 10);
 			
 		}
@@ -275,18 +293,6 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	public void drawScore() {
 		currentControlPanel.scoreBoard.setText(String.valueOf(this.score));
-	}
-	
-	// This method drawing guide lines (cells)
-	public void drawlines(Graphics2D g) {
-
-		for (int x = 0; x <= WIDTH * CELL_SIZE; x += CELL_SIZE) {
-			for (int y = 0; y <= HEIGHT * CELL_SIZE; y += CELL_SIZE) {
-				g.setStroke(new BasicStroke(0.1f));
-				g.setColor(Color.GRAY.brighter());
-				g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
-			}
-		}
 	}
 
 
@@ -321,12 +327,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		g2D.drawImage(rat, foodPositionX * CELL_SIZE, foodPositionY * CELL_SIZE, 20, 20, null);
 	}
 	
-	public void changeBackground() {
-		flexColor = JColorChooser.showDialog(null, 
-				"Choose color to change snake background", Color.WHITE);
-		setBackground(flexColor);
-		refresh();
-	}
 
 	/* Change some graphics settings */
 	private void applyQualityRenderingHints(Graphics2D g2d) {
@@ -347,10 +347,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		final Graphics2D graphics2d = (Graphics2D) g;
 		applyQualityRenderingHints(graphics2d);
-
-		if(guideLine) {
-			drawlines(graphics2d);
-		}
+		
+		drawBackground(graphics2d);
 		
 		/* Draw snake parts */
 		for (int index = 0; index < snake.length; index++) {
@@ -492,38 +490,43 @@ public class GamePanel extends JPanel implements ActionListener {
 
 			@Override
 			public synchronized void keyPressed(KeyEvent e) {
-
+				if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+					start();
+				}
+				
 				if (!snake.gameIsOver) {
 
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_LEFT:
 						if (snake.getDirection() != Direction.RIGHT) {							
 							snake.setDirection(Direction.LEFT);
-							setHeadImagePath(ImagePaths.HEAD_LEFT);							
+							setHeadImagePath(ImagePaths.HEAD_LEFT);		
+							
 						}
 						break;
 					case KeyEvent.VK_RIGHT:
 						if (snake.getDirection() != Direction.LEFT) {							
 							snake.setDirection(Direction.RIGHT);
 							setHeadImagePath(ImagePaths.HEAD_RIGHT);
+							
 						}
 						break;
 					case KeyEvent.VK_UP:
 						if (snake.getDirection() != Direction.DOWN) {							
 							snake.setDirection(Direction.UP);
 							setHeadImagePath(ImagePaths.HEAD_UP);
+						
 						}
 						break;
 					case KeyEvent.VK_DOWN:
 						if (snake.getDirection() != Direction.UP) {
 							snake.setDirection(Direction.DOWN);
-							setHeadImagePath(ImagePaths.HEAD_DOWN);
+							setHeadImagePath(ImagePaths.HEAD_DOWN);							
 						}
 						break;
 					default:
 						break;
 					}
-					
 
 				}
 
@@ -549,9 +552,6 @@ public class GamePanel extends JPanel implements ActionListener {
 				currentControlPanel.soundButton.setIcon(new 
 				ImageIcon(this.getClass().getResource(ImagePaths.MUTE_IMG)));
 			}
-			break;
-		case "colors":
-			changeBackground();
 			break;
 		case "start":
 			start();
@@ -583,12 +583,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		case "hardLevel":
 			changeDifficulty(32);
 			break;
-		case "guideLines":
-			if(guideLine) {
-				guideLine = false;
-			}else {
-				guideLine = true;
-			}
 		default:
 			refresh();
 			break;

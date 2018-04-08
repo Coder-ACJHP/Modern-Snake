@@ -30,8 +30,8 @@ public class Food {
 		isValidXY = false;
 		while (!isValidXY) {
 			
-			randomX = (int) (Math.random() * GamePanel.WIDTH);
-			randomY = (int) (Math.random() * GamePanel.HEIGHT);
+			randomX = (int) (Math.random() * GamePanel.WIDTH-1);
+			randomY = (int) (Math.random() * GamePanel.HEIGHT-1);
 						
 			for (int i = 0; i < snake.length; i++) {
 				positionX = snake.positionX[i];
@@ -78,8 +78,8 @@ public class Food {
 		showCounter = false;
 		timer.cancel();
 		this.interval = 1;
-		masterPositionX = GamePanel.WIDTH * GamePanel.WIDTH;
-		masterPositionY = GamePanel.HEIGHT * GamePanel.HEIGHT;
+		masterPositionX = GamePanel.WIDTH +2;
+		masterPositionY = GamePanel.HEIGHT +2;
 	}
 
 	public class CountDown {

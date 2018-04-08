@@ -7,7 +7,6 @@ public class ImagePaths {
 	public final static String ARROW_DOWN = "/com/coder/snake/icons/down.png";
 	public final static String ARROW_LEFT = "/com/coder/snake/icons/left.png";
 	public final static String ARROW_RIGHT = "/com/coder/snake/icons/right.png";
-	public final static String COLOR_PALETTE = "/com/coder/snake/icons/color-palette.png";
 
 	public final static String MENU_EXIT = "/com/coder/snake/icons/menu-exit.png";
 	public final static String MENU_RESTART = "/com/coder/snake/icons/menu-restart.png";

@@ -48,10 +48,14 @@ public class Snake {
 				positionY[0]--;
 			}
 
+
 		/* If the snake hits itself (body) finish the game */
-		for (int index = length; index > 0; index--) {
-			if ((positionX[0] == positionX[index]) && (positionY[0] == positionY[index]))
-				this.gameIsOver = true;
+		for (int index = length-1; index > 0; index--) {
+			if (length > 4) { //if longer than start size...
+				if((positionX[0] == positionX[index]) && (positionY[0] == positionY[index])) {
+					this.gameIsOver = true;
+				}
+			}
 		}
 
 		/* Control the snake hits the walls */
