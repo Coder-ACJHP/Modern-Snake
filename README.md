@@ -10,7 +10,7 @@
 </ol>
 <div align="center" style="text-align:center;">
   <h1>Modern Snake screen shot</h1>
-  <image src="https://github.com/Coder-ACJHP/Snake-Modern/blob/master/src/com/coder/snake/icons/ScreenShot.png">
+  <image src="https://github.com/Coder-ACJHP/Modern-Snake/blob/master/src/com/coder/snake/icons/snake.gif">
 </div>
 <h4>The game designed on mvc pattern</h4>
 <ul>
