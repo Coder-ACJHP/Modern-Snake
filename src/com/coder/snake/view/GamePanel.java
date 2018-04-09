@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private Timer timer;
 	private int score;
 	private int highScore = 0;
-	public int difficult = 42;
+	public int difficult = 50;
 	private String snailImagePath = ImagePaths.SNAIL;
 	private String ratImagePath = ImagePaths.RAT;
 	
@@ -229,27 +229,6 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.easyRdBtn.setEnabled(true);
 		currentControlPanel.mediumRdBtn.setEnabled(true);
 		currentControlPanel.hardRdBtn.setEnabled(true);
-	}
-
-	/* Increase score method */
-	private void changeScore(int theDifficult) {
-		switch (theDifficult) {
-		case 64:
-			score = score + 3;
-			break;
-		case 42:
-			score = score + 5;
-			break;
-		case 32:
-			score = score + 10;
-			break;
-		case 20:
-			score = score + 20;
-			break;
-		default:
-			refresh();
-			break;
-		}
 	}
 	
 	/* Change game difficulty with changing delay of timer.
@@ -600,13 +579,13 @@ public class GamePanel extends JPanel implements ActionListener {
 			moveToDown();
 			break;
 		case "easyLevel":
-			changeDifficulty(64);
+			changeDifficulty(70);
 			break;
 		case "mediumLevel":
-			changeDifficulty(42);
+			changeDifficulty(50);
 			break;
 		case "hardLevel":
-			changeDifficulty(32);
+			changeDifficulty(40);
 			break;
 		default:
 			refresh();
@@ -615,6 +594,28 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	}
 
+
+	/* Increase score method */
+	private void changeScore(int theDifficult) {
+		switch (theDifficult) {
+		case 70:
+			score = score + 3;
+			break;
+		case 50:
+			score = score + 5;
+			break;
+		case 40:
+			score = score + 10;
+			break;
+		case 20:
+			score = score + 20;
+			break;
+		default:
+			refresh();
+			break;
+		}
+	}
+	
 	/* Getters and setters */
 	public String getHeadImagePath() {
 		return headImagePath;
