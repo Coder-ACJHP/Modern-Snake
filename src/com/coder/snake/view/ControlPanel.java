@@ -10,15 +10,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -26,7 +22,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
-import com.coder.snake.files.FilePaths;
 import com.coder.snake.icons.ImagePaths;
 
 public class ControlPanel extends JPanel {
@@ -230,14 +225,6 @@ public class ControlPanel extends JPanel {
 		highScoreBoard.setBounds(167, 258, 77, 25);
 		contentpanel.add(highScoreBoard);
 	
-		try  {
-			final BufferedReader br = new BufferedReader(
-					new InputStreamReader(getClass().getResourceAsStream(FilePaths.SCORE_MEMORY),"UTF-8"));
-			highScoreBoard.setText(br.readLine());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "Sorry we couldn't find score board file!", "File path error!",
-					JOptionPane.WARNING_MESSAGE);
-		}
 	}
 
 	@Override

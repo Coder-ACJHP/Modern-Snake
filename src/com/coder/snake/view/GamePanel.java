@@ -1,6 +1,7 @@
 package com.coder.snake.view;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,16 +18,13 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.coder.snake.files.FilePaths;
 import com.coder.snake.icons.ImagePaths;
 import com.coder.snake.model.Directions;
 import com.coder.snake.model.Food;
@@ -39,21 +37,23 @@ public class GamePanel extends JPanel implements ActionListener {
 	private static final int CELL_SIZE = 21;
 	public static int WIDTH;
 	public static int HEIGHT;
-	final Color topColor = Color.decode("#0075FF");
+	final Color topColor = Color.decode("#0071FF");
 
+	int counter = 0;
 	private Food food;
 	private Snake snake;
 	private Timer timer;
 	private int score;
 	private int highScore = 0;
+	/* Game level (speed) */
 	public int difficult = 50;
+	private Timer messageTimer; 
 	private String snailImagePath = ImagePaths.SNAIL;
 	private String ratImagePath = ImagePaths.RAT;
 	
 	private String headImagePath = ImagePaths.HEAD_RIGHT;
 	private String bodyImagePath = ImagePaths.BODY_RIGHT;
 	private String tailImagePath = ImagePaths.TAIL_RIGHT;
-	/* Game level (speed) */
 	private boolean mute = false;
 	private boolean gameIsPaused = false;
 	private SoundPlayer mediaPlayer;
@@ -61,6 +61,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private String statusMessage = "Press start or\n spacebar button!";
 	private static String secondStausMessage;
+	private static String newHighScoreText;
 
 	public GamePanel(ControlPanel controlPanel, final Dimension displaySize) {
 		
@@ -124,9 +125,10 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 
 		/* If user earn new high score show it live */
-		if (score > highScore)
+		if (score > highScore) {
 			highScore = score;
-
+			currentControlPanel.highScoreBoard.setText(String.valueOf(highScore));
+		}
 
 		if (snake.gameIsOver) {
 			gameOver();
@@ -150,6 +152,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		timer.start();
 		this.statusMessage = "";
 		secondStausMessage = "";
+		newHighScoreText = null;
 		this.snake.gameIsOver = false;
 		this.food.eatenCounter = 0;
 		refresh();
@@ -181,21 +184,29 @@ public class GamePanel extends JPanel implements ActionListener {
 		secondStausMessage = "Press start or\n spacebar button!";
 		prepareButtonsForGameOver();
 		
-		if(score > highScore) {
-
-			try (final FileWriter fileWriter = 
-					new FileWriter(new File(FilePaths.SCORE_MEMORY))) {
-				
-				fileWriter.write(String.valueOf(score));
-				fileWriter.flush();
-				
-			} catch (IOException ex) {
-				JOptionPane.showMessageDialog(this,
-						"Sorry we couldn't find score board file!\nSo cannot save your high score right now!",
-						"File path error!", JOptionPane.WARNING_MESSAGE);
-			}
+		if(score >= highScore) {
+			
+			startShowingHighScoreMessage();
 		}
+		counter = 0;
 		refresh();
+	}
+
+	private void startShowingHighScoreMessage() {
+		messageTimer = new Timer(1000, e-> {
+			counter++;
+			
+			if(counter != 0 && counter % 2 == 0) {
+				showMessage();
+			}else {
+				hideMessage();
+			}
+			
+			if(counter == 6) {
+				messageTimer.stop();
+			}
+		});
+		messageTimer.start();
 	}
 	
 	public void restart() {
@@ -260,7 +271,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 	
 	public void drawMessage(Graphics2D g) {
-		g.setColor(Color.decode("#5076F9"));
+		g.setColor(topColor);
 		Font font = new Font("SansSerif", Font.BOLD, 60);
 		FontMetrics fontMetrics = getFontMetrics(font);
 		g.setFont(font);
@@ -295,7 +306,47 @@ public class GamePanel extends JPanel implements ActionListener {
 		currentControlPanel.scoreBoard.setText(String.valueOf(this.score));
 	}
 
+	public void drawHighScore(Graphics2D g2D) {
+		
+		if(newHighScoreText != null) {
+			
+			final Font font = new Font("SansSerif", Font.BOLD, 60);
+			FontMetrics fontMetrics = getFontMetrics(font);
+			g2D.setFont(font);
+			g2D.setColor(Color.RED.darker());
+			
+			int posiX = (getWidth() - fontMetrics.stringWidth(newHighScoreText)) / 2;
+			int posiY = 600;
+			
+		    g2D.drawString(newHighScoreText, posiX, posiY);
+		    
+		    
+			final FontRenderContext frc = g2D.getFontRenderContext();
+		    g2D.translate(posiX-1, posiY-1);
+		    GlyphVector gv = font.createGlyphVector(frc, newHighScoreText);
+		    g2D.setColor(Color.GRAY.darker());
+		    g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		    g2D.draw(gv.getOutline());
+		    
+		    
+		}
+		
+	}
 
+	public void showMessage() {
+		
+		newHighScoreText = "New high score : " + highScore;
+		repaint();
+
+	}
+	
+	public void hideMessage() {
+		
+		newHighScoreText = null;
+		repaint();
+
+	}
+	
 	public void drawHead(int index, Graphics2D g2D) {
 
 		final Image head = new ImageIcon(this.getClass().getResource(getHeadImagePath())).getImage();
@@ -426,6 +477,9 @@ public class GamePanel extends JPanel implements ActionListener {
 		/* Draw messages */
 		drawMessage(graphics2d);
 
+		/* Draw high score message */
+		drawHighScore(graphics2d);
+		
 		/* Release resources */
 		graphics2d.dispose();
 	}

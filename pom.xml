@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Modern-Snake</groupId>
   <artifactId>Modern-Snake</artifactId>
-  <version>1.2.1-RELEASE</version>
+  <version>1.3.4-RELEASE</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>

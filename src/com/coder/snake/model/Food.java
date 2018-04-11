@@ -30,10 +30,13 @@ public class Food {
 		isValidXY = false;
 		while (!isValidXY) {
 			
-			randomX = (int) (Math.random() * GamePanel.WIDTH-1);
-			randomY = (int) (Math.random() * GamePanel.HEIGHT-1);
+			
 						
 			for (int i = 0; i < snake.length; i++) {
+				
+				randomX = (int) (Math.random() * GamePanel.WIDTH-1);
+				randomY = (int) (Math.random() * GamePanel.HEIGHT-1);
+				
 				positionX = snake.positionX[i];
 				positionY = snake.positionY[i];
 				
@@ -54,10 +57,12 @@ public class Food {
 		
 		while (!isValidXY) {
 			
-			masterPositionX = (int) (Math.random() * GamePanel.WIDTH);
-			masterPositionY = (int) (Math.random() * GamePanel.HEIGHT);
 						
 			for (int i = 0; i < snake.length; i++) {
+				
+				masterPositionX = (int) (Math.random() * GamePanel.WIDTH);
+				masterPositionY = (int) (Math.random() * GamePanel.HEIGHT);
+
 				randomX = snake.positionX[i];
 				randomY = snake.positionY[i];
 				
